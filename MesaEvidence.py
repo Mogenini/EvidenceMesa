@@ -3,7 +3,7 @@ from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
 
-
+#Hola Mundo COmo estan
 coordinateStructures = {
     "Buildings": [
         (3,3), (3,4), (3,5), (3,6), (3,7), (3,8), (3,9), (3,11), (3,12),
@@ -32,25 +32,48 @@ coordinateStructures = {
     ],
     "Round_Abouts": [
         (14,14), (14,15), (15,14), (15,15), (18,15), (18,16)
-    ]
+    ],
+
+    "Right":[],
+
+    "Left":[] ,
+
+    "Up":[],
+
+    "Down":[]
+
+    
 }
 
 class CityModel(mesa.Model):
     def __init__(self, n, width, height, dataStructure ,seed=None):
         super().__init__(seed=seed)
         self.num_Cars = n
-        self.buildingLayer = mesa.space.PropertyLayer("buildingLayer", width, height, default_value=0)
-        self.trafficLightLayer = mesa.space.PropertyLayer("trafficLightLayer", width, height, default_value= 0 )
-        self.parkingLayer = mesa.space.PropertyLayer("parkingLayer", width, height, default_value= 0)
-        self.roundAboutLayer = mesa.space.PropertyLayer("roundAboutLayer", width, height, default_value=0)
+        self.buildingLayer = mesa.space.PropertyLayer("buildingLayer", width, height, default_value = np.float64(0))
+        self.trafficLightLayer = mesa.space.PropertyLayer("trafficLightLayer", width, height, default_value = np.float64(0) )
+        self.parkingLayer = mesa.space.PropertyLayer("parkingLayer", width, height, default_value = np.float64(0))
+        self.roundAboutLayer = mesa.space.PropertyLayer("roundAboutLayer", width, height, default_value = np.float64(0))
 
-        self.grid = mesa.space.MultiGrid(width,height,True,(self.buildingLayer,self.trafficLightLayer,self.parkingLayer,self.roundAboutLayer))
+        #movement layers 
+        self.RightLayer = mesa.space.PropertyLayer("RightLayer", width, height, default_value = np.float64(0))
+        self.LeftLayer = mesa.space.PropertyLayer("LeftLayer", width, height, default_value = np.float64(0))
+        self.UpLayer = mesa.space.PropertyLayer("UpLayer", width, height, default_value = np.float64(0))
+        self.DownLayer = mesa.space.PropertyLayer("DownLayer", width, height, default_value = np.float64(0))
+
+
+        self.grid = mesa.space.MultiGrid(width,height,True,(self.buildingLayer,self.trafficLightLayer,self.parkingLayer,self.roundAboutLayer, self.RightLayer, self.LeftLayer, self.UpLayer, self.DownLayer))
 
         def set_Data_Structures(coordinateStructurePositions):
             set_buildingsLayer(coordinateStructurePositions["Buildings"])
             set_traffic_lightsLayer(coordinateStructurePositions["Semaphores"])
             set_parking_lotsLayer(coordinateStructurePositions["Parking_Lots"])
             set_round_aboutsLayer(coordinateStructurePositions["Round_Abouts"])
+
+            #movement layers 
+            set_right_Layer(coordinateStructurePositions["Right"])
+            set_left_Layer(coordinateStructurePositions["Left"])
+            set_up_Layer(coordinateStructurePositions["Up"])
+            set_down_Layer(coordinateStructurePositions["Down"])
             return
 
         def set_buildingsLayer(buildingsArray):
@@ -70,11 +93,35 @@ class CityModel(mesa.Model):
                 self.grid.properties["roundAboutLayer"].set_cell((x, y), 10)
 
 
+        #movement layers 
+        def set_right_Layer(coordinateStructurePositions):
+            for x,y in coordinateStructurePositions:
+                self.grid.properties["RightLayer"].set_cell((x, y), 30) #si va este valor?
+
+        def set_left_Layer(coordinateStructurePositions):
+            for x,y in coordinateStructurePositions:
+                self.grid.properties["LeftLayer"].set_cell((x, y), 40)       
+
+        def set_up_Layer(coordinateStructurePositions):
+            for x,y in coordinateStructurePositions:
+                self.grid.properties["UpLayer"].set_cell((x, y), 50)      
+
+        def set_down_Layer(coordinateStructurePositions):
+            for x,y in coordinateStructurePositions:
+                self.grid.properties["DownLayer"].set_cell((x, y), 60) 
+
+
         set_Data_Structures(dataStructure)
         print("Building Layer Data:", self.grid.properties["buildingLayer"].data)
         print("Traffic Layer Data:", self.grid.properties["trafficLightLayer"].data)
         print("Parking Layer Data:", self.grid.properties["parkingLayer"].data)
         print("Roundabout Layer Data:", self.grid.properties["roundAboutLayer"].data)
+
+        #movement layers 
+        print("Right Layer Data:", self.grid.properties["RightLayer"].data)
+        print("Down Layer Data:", self.grid.properties["DownLayer"].data)
+        print("Up Layer Data:", self.grid.properties["UpLayer"].data)
+        print("Down Layer Data:", self.grid.properties["DownLayer"].data)
 
 
 class CarAgent(mesa.Agent):
