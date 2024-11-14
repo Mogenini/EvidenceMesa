@@ -2,8 +2,33 @@ import mesa
 from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
+import agents
 
 class CityModel(mesa.Model):
+    def printGrid():
+        # Dimensions of the grid
+        grid_height = len(self.grid.properties["buildingLayer"].data)
+        grid_width = len(self.grid.properties["buildingLayer"].data[0])
+
+        for y in range(grid_height):
+            row = ""
+            for x in range(grid_width):
+                # Check each layer for the current position (x, y)
+                building = self.grid.properties["buildingLayer"].data[y][x]
+                traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
+                parking = self.grid.properties["parkingLayer"].data[y][x]
+
+                # Determine the symbol for each cell based on layer presence
+                if building:
+                    row += "B "  # B for Building
+                elif traffic_light:
+                    row += "T "  # T for Traffic Light
+                elif parking:
+                    row += "P "  # P for Parking
+                else:
+                    row += ". "  # . for empty space
+            print(row)
+
     def __init__(self, n, width, height, dataStructure ,seed=None):
         super().__init__(seed=seed)
         self.num_Cars = n
@@ -44,15 +69,16 @@ class CityModel(mesa.Model):
                 self.grid.properties["buildingLayer"].set_cell((x, y), 1)
 
         def set_traffic_lightsLayer(coordinateStructurePositions):
-            for (x,y),value in coordinateStructurePositions:
-                if value:
-                    self.grid.properties["trafficLightLayer"].set_cell((x, y), 40)
-                else:
-                    self.grid.properties["trafficLightLayer"].set_cell((x, y), 50)
+            for coordinate_pair in coordinateStructurePositions:
+                for (x, y), isOn in coordinate_pair:
+                    if isOn:
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 40)
+                    else:
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 50)
 
         def set_parking_lotsLayer(coordinateStructurePositions):
-            for (x,y),value in coordinateStructurePositions:
-                if value:
+            for (x,y),isOccupied in coordinateStructurePositions:
+                if isOccupied:
                     self.grid.properties["parkingLayer"].set_cell((x, y), 20)
                 else:
                     self.grid.properties["parkingLayer"].set_cell((x, y), 30)
@@ -81,33 +107,19 @@ class CityModel(mesa.Model):
 
 
         set_Data_Structures(dataStructure)
-        #print("Building Layer Data:\n", self.grid.properties["buildingLayer"].data)
-        #print("Traffic Layer Data:\n", self.grid.properties["trafficLightLayer"].data)
-        #print("Parking Layer Data:\n", self.grid.properties["parkingLayer"].data)
 
 
-        def printGrid():
-            # Dimensions of the grid
-            grid_height = len(self.grid.properties["buildingLayer"].data)
-            grid_width = len(self.grid.properties["buildingLayer"].data[0])
+        #Create Traffic Light Agents
 
-            for y in range(grid_height):
-                row = ""
-                for x in range(grid_width):
-                    # Check each layer for the current position (x, y)
-                    building = self.grid.properties["buildingLayer"].data[y][x]
-                    traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
-                    parking = self.grid.properties["parkingLayer"].data[y][x]
+        for idSemaphore in dataStructure["Semaphores"]:
+            coords = []
+            status = False
+            for (x,y),value in idSemaphore:
+                coords.append((x,y))
+                status = value
+            agents.TrafficLightAgent(self,idSemaphore,coords,status)
 
-                    # Determine the symbol for each cell based on layer presence
-                    if building:
-                        row += "B "  # B for Building
-                    elif traffic_light:
-                        row += "T "  # T for Traffic Light
-                    elif parking:
-                        row += "P "  # P for Parking
-                    else:
-                        row += ". "  # . for empty space
-                print(row)
+        self.printGrid()
 
-        printGrid()
+    def step(self):
+        self.agents_by_type[agents.TrafficLightAgent].shuffle_do("step")
