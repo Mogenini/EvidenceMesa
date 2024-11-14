@@ -1,0 +1,39 @@
+
+    def move(self):
+        if self.isParked:
+            return
+
+        # Get movement layers from the grid
+        right_layer = self.model.grid.properties["RightLayer"].data
+        left_layer = self.model.grid.properties["LeftLayer"].data
+        up_layer = self.model.grid.properties["UpLayer"].data
+        down_layer = self.model.grid.properties["DownLayer"].data
+        building_layer = self.model.grid.properties["buildingLayer"].data
+
+        # Actual coords
+        x, y = self.position
+
+        # Determine the next move based on direction layers
+        if right_layer[y][x] and not building_layer[y][x + 1]:
+            next_position = (x + 1, y)
+        elif left_layer[y][x] and not building_layer[y][x - 1]:
+            next_position = (x - 1, y)
+        elif up_layer[y][x] and not building_layer[y - 1][x]:
+            next_position = (x, y - 1)
+        elif down_layer[y][x] and not building_layer[y + 1][x]:
+            next_position = (x, y + 1)
+        else:
+            # Do not move if there is no valid direction or if there is a building
+            return
+
+        # Move the car to the new position if no other car occupies it
+        if self.model.grid.is_cell_empty(next_position):
+            self.model.grid.move_agent(self, next_position)
+
+    def park(self):
+        if self.position == self.destination:
+            self.isParked = True
+
+    def step(self):
+        self.move()
+        self.park()
