@@ -5,6 +5,11 @@ import seaborn as sns
 
 import model
 
+'''
+Format:
+Semaphore: [ [ [(x,y),True],[] ] ]
+'''
+
 data = {
     "Buildings": [
         (2, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (10, 2), (11, 2), (3, 2),
@@ -34,18 +39,20 @@ data = {
         [(20, 4), False], [(21, 9), 1], [(2, 17), False], [(5, 20), False],
         [(8, 20), False], [(17, 17), 1], [(19, 17), False], [(19, 20), False]
     ],
-    "Semaphores": [
-        [(17, 0), True], [(18, 2), False],
-        [(17, 1), True], [(19, 2), False],
-        [(2, 6), True], [(22, 5), False],
-        [(2, 7), True], [(23, 5), False],
-        [(7, 6), True], [(0, 8), False],
-        [(7, 7), True], [(1, 8), False],
-        [(21, 6), True], [(5, 8), False],
-        [(21, 7), True], [(6, 8), False],
-        [(16, 18), True], [(14, 17), False],
-        [(16, 19), True], [(15, 17), False]
+    "Semaphores": [ [[(17, 0), True], [(17, 1), True]],
+                   [[(2, 6), True],[(2, 7), True]],
+                   [[(7, 6), True],[(7, 7), True]],
+                   [[(21, 6), True],[(21, 7), True]],
+                   [[(16, 18), True],[(16, 19), True]],
+                   [[(18, 2), False],[(19, 2), False]],
+                   [[(22, 5), False],[(23, 5), False]],
+                   [[(0, 8), False],[(1, 8), False]],
+                   [[(5, 8), False],[(6, 8), False]],
+                   [[(14, 17), False],[(15, 17), False]]
+
     ]
 }
 
 ModelCity = model.CityModel(1,24,24,data)
+
+ModelCity.step()

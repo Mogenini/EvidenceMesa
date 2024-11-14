@@ -48,23 +48,32 @@ Each approach would be different.
 The following approach will be with bool:
 '''
 
+'''
+
+'''
 
 class TrafficLightAgent(mesa.Agent):
-    def __init__(self, model, status):
-        super().__init__(self, model)
-        self.state = status
+    def __init__(self, model, idSemaphore,coordinatesPosition,Status):
+        super().__init__(model)
         self.clock = 0
+        self.semaphorePosition = coordinatesPosition
+        self.semaphoreId = idSemaphore
+        self.state = Status
 
     def change_light(self):
         if self.state:
             self.state = False
-            # Modify the property grid
+            for x,y in self.semaphorePosition:
+                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 50) #Change to red
+
         else:
             self.state = True
+            for x,y in self.semaphorePosition:
+                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 40) #Change to red
+
 
     def step(self):
         self.clock += 1
-
-        if self.clock == 10:
+        if self.clock == 1:
             self.change_light()
             clock = 0
