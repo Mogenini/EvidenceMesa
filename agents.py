@@ -86,19 +86,20 @@ class TrafficLightAgent(mesa.Agent):
         self.state = Status
 
     def change_light(self):
-        if self.state:
-            self.state = False
-            for x,y in self.semaphorePosition:
-                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 1) #Change to red
-
-        else:
-            self.state = True
-            for x,y in self.semaphorePosition:
-                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 2) #Change to green
+        self.clock += 1
+        if self.clock == 5:
+            #print(f"Changing the light of: {self.semaphorePosition}")
+            self.clock = 0
+            if self.state:
+                self.state = False
+                for x,y in self.semaphorePosition:
+                    self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 1) #Change to red
+            else:
+                self.state = True
+                for x,y in self.semaphorePosition:
+                    self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 2) #Change to green
 
 
     def step(self):
-        self.clock += 1
-        if self.clock == 1:
-            self.change_light()
-            clock = 0
+        self.change_light()
+
