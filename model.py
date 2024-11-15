@@ -5,30 +5,6 @@ import seaborn as sns
 import agents
 
 class CityModel(mesa.Model):
-    def printGrid():
-        # Dimensions of the grid
-        grid_height = len(self.grid.properties["buildingLayer"].data)
-        grid_width = len(self.grid.properties["buildingLayer"].data[0])
-
-        for y in range(grid_height):
-            row = ""
-            for x in range(grid_width):
-                # Check each layer for the current position (x, y)
-                building = self.grid.properties["buildingLayer"].data[y][x]
-                traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
-                parking = self.grid.properties["parkingLayer"].data[y][x]
-
-                # Determine the symbol for each cell based on layer presence
-                if building:
-                    row += "B "  # B for Building
-                elif traffic_light:
-                    row += "T "  # T for Traffic Light
-                elif parking:
-                    row += "P "  # P for Parking
-                else:
-                    row += ". "  # . for empty space
-            print(row)
-
     def __init__(self, n, width, height, dataStructure ,seed=None):
         super().__init__(seed=seed)
         self.num_Cars = n
@@ -56,12 +32,11 @@ class CityModel(mesa.Model):
             set_traffic_lightsLayer(coordinateStructurePositions["Semaphores"])
             set_parking_lotsLayer(coordinateStructurePositions["Parking_Lots"])
 
-
             #movement layers
-            #set_right_Layer(coordinateStructurePositions["Right"])
-            #set_left_Layer(coordinateStructurePositions["Left"])
-            #set_up_Layer(coordinateStructurePositions["Up"])
-            #set_down_Layer(coordinateStructurePositions["Down"])
+            set_right_Layer(coordinateStructurePositions["Right"])
+            set_left_Layer(coordinateStructurePositions["Left"])
+            set_up_Layer(coordinateStructurePositions["Up"])
+            set_down_Layer(coordinateStructurePositions["Down"])
             return
 
         def set_buildingsLayer(buildingsArray):
@@ -72,38 +47,33 @@ class CityModel(mesa.Model):
             for coordinate_pair in coordinateStructurePositions:
                 for (x, y), isOn in coordinate_pair:
                     if isOn:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 40)
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 1)
                     else:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 50)
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 2)
 
         def set_parking_lotsLayer(coordinateStructurePositions):
             for (x,y),isOccupied in coordinateStructurePositions:
                 if isOccupied:
-                    self.grid.properties["parkingLayer"].set_cell((x, y), 20)
+                    self.grid.properties["parkingLayer"].set_cell((x, y), 2) #2 occupied
                 else:
-                    self.grid.properties["parkingLayer"].set_cell((x, y), 30)
-
-        def set_round_aboutsLayer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["roundAboutLayer"].set_cell((x, y), 10)
-
+                    self.grid.properties["parkingLayer"].set_cell((x, y), 1)
 
         #movement layers
         def set_right_Layer(coordinateStructurePositions):
             for x,y in coordinateStructurePositions:
-                self.grid.properties["RightLayer"].set_cell((x, y), 30) #si va este valor?
+                self.grid.properties["RightLayer"].set_cell((x, y), 1)
 
         def set_left_Layer(coordinateStructurePositions):
             for x,y in coordinateStructurePositions:
-                self.grid.properties["LeftLayer"].set_cell((x, y), 40)
+                self.grid.properties["LeftLayer"].set_cell((x, y), 1)
 
         def set_up_Layer(coordinateStructurePositions):
             for x,y in coordinateStructurePositions:
-                self.grid.properties["UpLayer"].set_cell((x, y), 50)
+                self.grid.properties["UpLayer"].set_cell((x, y), 1)
 
         def set_down_Layer(coordinateStructurePositions):
             for x,y in coordinateStructurePositions:
-                self.grid.properties["DownLayer"].set_cell((x, y), 60)
+                self.grid.properties["DownLayer"].set_cell((x, y), 1)
 
 
         set_Data_Structures(dataStructure)
@@ -119,7 +89,39 @@ class CityModel(mesa.Model):
                 status = value
             agents.TrafficLightAgent(self,idSemaphore,coords,status)
 
-        self.printGrid()
+
+        #Create car Agent:
+        for iDCar in range(self.num_Cars):
+            carAgent = agents.CarAgent(self,True,(17,0),(2,3))# model, isParked,startingPosition,endingPosition
+            self.grid.place_agent(carAgent,(17,0))
+
+        def printGrid():
+            # Dimensions of the grid
+            grid_height = len(self.grid.properties["buildingLayer"].data)
+            grid_width = len(self.grid.properties["buildingLayer"].data[0])
+
+            for y in range(grid_height):
+                row = ""
+                for x in range(grid_width):
+                    # Check each layer for the current position (x, y)
+                    building = self.grid.properties["buildingLayer"].data[y][x]
+                    traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
+                    parking = self.grid.properties["parkingLayer"].data[y][x]
+
+                    # Determine the symbol for each cell based on layer presence
+                    if building:
+                        row += "B "  # B for Building
+                    elif traffic_light:
+                        row += "T "  # T for Traffic Light
+                    elif parking:
+                        row += "P "  # P for Parking
+                    else:
+                        row += ". "  # . for empty space
+                print(row)
+
+        printGrid()
+        print(self.grid.properties["RightLayer"].data)
 
     def step(self):
         self.agents_by_type[agents.TrafficLightAgent].shuffle_do("step")
+        self.agents_by_type[agents.CarAgent].shuffle_do("step")
