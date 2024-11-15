@@ -19,6 +19,7 @@ class CarAgent(mesa.Agent):
         self.endingPosition = endingPosition
 
     def move(self):
+        #Change the value of the grid if the car was parked
 
         print(f"Starting Position: {self.pos}")
         if self.pos == self.endingPosition:

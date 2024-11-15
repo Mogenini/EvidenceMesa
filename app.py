@@ -1,5 +1,3 @@
-from readline import backend
-
 import mesa
 from mesa.examples.advanced.wolf_sheep.app import space_component, model
 from mesa.examples.basic.schelling.app import model_params

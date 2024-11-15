@@ -86,10 +86,6 @@ class CityModel(mesa.Model):
             set_layer(self, coordinateStructurePositions, "DownLayer")
 
         set_Data_Structures(dataStructure)
-        print(self.grid.properties["LeftLayer"].data)
-        print(self.grid.properties["RightLayer"].data)
-        print(self.grid.properties["UpLayer"].data)
-        print(self.grid.properties["DownLayer"].data)
 
         # Create Traffic Light Agents
         for idSemaphore in dataStructure["Semaphores"]:
@@ -100,13 +96,61 @@ class CityModel(mesa.Model):
                 status = value
             agents.TrafficLightAgent(self, idSemaphore, coords, status)
 
-        # Create Car Agents
+        '''
+        Create car Agent:
+        '''
+
+        def createCarInParking(availableParkinLot, availablePositions):
+            '''
+            I know this can be simplified, but adding a condition that will always make the agent appear at least
+            one time in the parking position
+            '''
+            startingPosition = self.random.choice(list(availableParkinLot))
+            availableParkinLot.discard(startingPosition)
+            availablePositions.discard(startingPosition)
+
+            endingPosition = self.random.choice(list(availableParkinLot))
+            availablePositions.discard(endingPosition)
+            availableParkinLot.discard(endingPosition)
+
+            self.grid.properties["parkingLayer"].set_cell(startingPosition, 2)
+
+            return startingPosition, endingPosition, True
+
+        availablePositions = set()
+        availableParkinLot = set()
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.grid.properties["buildingLayer"].data[x,y] == 0:
+                    availablePositions.add((x, y))
+                    if self.grid.properties["parkingLayer"].data[x,y] == 1:
+                        availableParkinLot.add((x, y))
+
+
+        carIsOnParking = False
         for iDCar in range(self.n):
-            carAgent = agents.CarAgent(self, True, (1, 9), (2, 3))  # model, isParked, startingPosition, endingPosition
-            self.grid.place_agent(carAgent, (1, 9))
+            startingPosition = None
+            endingPosition = None
+            isParked = False
+            if not carIsOnParking:
+                startingPosition,endingPosition,isParked = createCarInParking(availableParkinLot, availablePositions)
+                carIsOnParking = True
+            else:
+                if self.random.randint(0,2) != 0:
+                    #Case Where they don't spawn in a parking lot
+                    startingPosition = self.random.choice(list(availablePositions))
+                    availableParkinLot.discard(startingPosition)
+                    availableParkinLot.discard(startingPosition)
+                    endingPosition = self.random.choice(list(availablePositions))
+                    availableParkinLot.discard(endingPosition)
+                    availablePositions.discard(endingPosition)
+                else:
+                    startingPosition, endingPosition, isParked = createCarInParking(availableParkinLot,
+                                                                                    availablePositions)
 
-
-
+            carAgent = agents.CarAgent(self, isParked, startingPosition, endingPosition)  # model, isParked, startingPosition, endingPosition
+            print(f"Starting Position: {startingPosition} and ending position {endingPosition}")
+            self.grid.place_agent(carAgent, (startingPosition[0],startingPosition[1]))
 
     def step(self):
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
