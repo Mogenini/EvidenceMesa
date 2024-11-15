@@ -102,24 +102,20 @@ class CityModel(mesa.Model):
 
 
         #Create Car Agents
-        building_layer = model.grid.properties["buildingLayer"].data 
-        for idCar in range(n):  # `n` es el número de carros a inicializar
+        building_layer = self.model.grid.properties["buildingLayer"].data 
+        for idCar in range(n):  
             # Obtener posiciones válidas (sin edificios)
             valid_positions = [
                 (x, y) for (x, y), value in np.ndenumerate(building_layer) if value == 0
             ]
 
             if valid_positions:  # Si hay posiciones válidas
-                random_position = random.choice(valid_positions)  # Elegir una posición aleatoria
+                random_position = self.random.choice(valid_positions)  # Elegir una posición aleatoria
 
-                # Crear el carro y asignar posición
-                car = CarAgent(model)
+                car = agents.CarAgent(self)
                 car.pos = random_position
+                self.model.grid.place_agent(car, random_position)
 
-                # Colocar el carro en la cuadrícula
-                model.grid.place_agent(car, random_position)
-
-                # Eliminar la posición seleccionada de las válidas para evitar duplicados
                 valid_positions.remove(random_position)
 
 
