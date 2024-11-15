@@ -1,15 +1,17 @@
+from readline import backend
+
 import mesa
+from mesa.examples.advanced.wolf_sheep.app import space_component, model
+from mesa.examples.basic.schelling.app import model_params
 from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
 from mesa.visualization import Slider, SolaraViz, make_space_component
+import matplotlib.pyplot as plt
+from numpy.matrixlib.defmatrix import matrix
+from solara import component
 
-import model
-
-'''
-Format:
-Semaphore: [ [ [(x,y),True],[] ] ]
-'''
+from agents import CarAgent,TrafficLightAgent
 
 data = {
     "Buildings": [
@@ -72,7 +74,9 @@ data = {
 
         (16, 12), (17, 12), (18, 12), (19, 12), (20, 12), (21, 12), (22, 12),
         (16, 13), (17, 13), (18, 13), (19, 13), (20, 13), (21, 13),
-        (22, 13)
+        (22, 13),
+        #Parking Spots
+        (1,3)
     ],
     "Up": [
         (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6), (8, 6), (9, 6), (10, 6), (11, 6), (12, 6),
@@ -96,7 +100,9 @@ data = {
 
         (1, 23), (2, 23), (3, 23), (4, 23), (5, 23), (6, 23), (7, 23), (8, 23), (9, 23), (10, 23), (11, 23),
         (12, 23), (13, 23), (14, 23), (15, 23), (16, 23), (17, 23), (18, 23), (19, 23), (20, 23), (21, 23), (22, 23),
-        (23,23)
+        (23,23),
+        #Parking Spots
+        (2,3)
     ],
     "Right": [
         (2,0),(3,0),(4,0), (5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (10, 0),
@@ -121,6 +127,7 @@ data = {
         (23,0),(23, 1), (23, 2), (23, 3), (23, 4), (23, 5), (23, 6), (23, 7), (23, 8),
         (23, 9), (23, 10), (23, 11), (23, 12), (23, 13), (23, 14), (23, 15), (23, 16),
         (23, 17), (23, 18), (23, 19), (23, 20), (23, 21), (23, 22)
+        #Parking Spots
     ],
     "Left": [
         (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9), (0, 10), (0, 11),
@@ -141,10 +148,59 @@ data = {
         (13, 1), (13, 2), (13, 3), (13, 4), (13, 5), (13, 6), (13, 7), (13, 8), (13, 9),
         (13, 10), (13, 11), (13, 16), (13, 17), (13, 18), (13, 19), (13, 20), (13, 21), (13, 22),
         (18, 1), (18, 2), (18, 3), (18, 4), (18, 5), (18, 6),
-        (19, 1), (19, 2), (19, 3), (19, 4), (19, 5), (19, 6)
+        (19, 1), (19, 2), (19, 3), (19, 4), (19, 5), (19, 6),
+        #Parking Spots
+
     ]
 }
+from model import CityModel
 
-ModelCity = model.CityModel(1,24,24,data)
+'''
+def agent_portrayal(agent):
+    if isinstance(agent, CarAgent):
+        size = 10
+        color = "tab:blue" if agent.has_parked else "tab:gray"
+        return {"size": size, "color": color, "layer": 1, "shape": "circle"}
+    elif isinstance(agent, TrafficLightAgent):
+        color = "green" if agent.state else "red"
+        return {"size": 20, "color": color, "layer": 2, "shape": "rect"}
+    else:
+        return {"size": 5, "color": "black", "layer": 0}
+'''
 
-ModelCity.step()
+
+model_params = {
+    "n": {
+        "type": "SliderInt",
+        "value": 1,
+        "label": "Number of agents:",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+    },
+    "width": 24,
+    "height": 24,
+    "dataStructure": data
+}
+'''
+Format:
+Semaphore: [ [ [(x,y),True],[] ] ]
+'''
+
+#Create initial Model Instance
+model = CityModel(1,24,24,data)
+
+for _ in range(25):
+    model.step()
+'''
+spaceGraph = make_space_component(agent_portrayal)
+page = SolaraViz(
+    model,
+    components = [spaceGraph],
+    model_params = model_params,
+    name = "Car Agent and Traffic Light",
+)
+page
+'''
+
+
