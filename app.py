@@ -136,6 +136,8 @@ Semaphore: [ [ [(x,y),True],[] ] ]
 #Create initial Model Instance
 model = CityModel(1,24,24,data)
 
+for _ in range(100):
+    model.step()
 
 
 '''

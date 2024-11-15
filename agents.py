@@ -5,7 +5,6 @@ import seaborn as sns
 import model
 
 def calculate_distance(start, end):
-    """Calculate the Manhattan distance between two points."""
     x1, y1 = start
     x2, y2 = end
     return abs(x1 - x2) + abs(y1 - y2)
@@ -15,7 +14,7 @@ class CarAgent(mesa.Agent):
     def __init__(self, model, isParked,startingPosition,endingPosition):
         super().__init__(model)
         self.model = model
-        self.has_parked = isParked
+        self.isParked = isParked
         self.startingPosition = startingPosition
         self.endingPosition = endingPosition
 
@@ -23,7 +22,7 @@ class CarAgent(mesa.Agent):
 
         print(f"Starting Position: {self.pos}")
         if self.pos == self.endingPosition:
-            self.has_parked = True
+            self.isParked = True
             print(f"The car reached: {self.pos} from {self.startingPosition}")
             return
 
@@ -31,33 +30,48 @@ class CarAgent(mesa.Agent):
         If it isn't in it's endingPosition it means it's moving
         Check if there is a trafficLight on or off
         '''
-        self.has_parked = False
+        self.isParked = False
         x,y = self.pos
         if self.model.grid.properties["trafficLightLayer"].data[x,y] == 2:
             print(f"Semaphore in red: {self.pos}")
             return
 
         neighbors = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+        print(neighbors)
         possibleMoves = []
+        flag = False
         for neighbor in neighbors:
             xNeighbor,yNeighbor = neighbor
+            if neighbor == self.endingPosition:
+                flag = True
+                possibleMoves = []
+                possibleMoves.append(neighbor)
 
-            #Right Movment
-            if xNeighbor == x + 1:
-                if self.model.grid.properties["RightLayer"].data[xNeighbor, yNeighbor] == 1:
-                    possibleMoves.append(neighbor)
-            #Left Movement
-            if xNeighbor == x - 1:
-                if self.model.grid.properties["LeftLayer"].data[xNeighbor, yNeighbor] == 1:
-                    possibleMoves.append(neighbor)
-            #Up Movement
-            if yNeighbor == y + 1:
-                if self.model.grid.properties["DownLayer"].data[xNeighbor, yNeighbor] == 1:
-                    possibleMoves.append(neighbor)
-            #Down Movemnt
-            if yNeighbor == y - 1:
-                if self.model.grid.properties["UpLayer"].data[xNeighbor, yNeighbor] == 1:
-                    possibleMoves.append(neighbor)
+            if not flag:
+                #Right Movment
+                if xNeighbor == x + 1:
+                    if self.model.grid.properties["RightLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+                #Left Movement
+                if xNeighbor == x - 1:
+                    if self.model.grid.properties["LeftLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+                #Up Movement
+                if yNeighbor == y + 1:
+                    if self.model.grid.properties["DownLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+                #Down Movemnt
+                if yNeighbor == y - 1:
+                    if self.model.grid.properties["UpLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+
+        if flag:
+            self.isParked = True
+            xNewPos, yNewPos = possibleMoves[0]
+            self.model.grid.move_agent(self, (xNewPos, yNewPos))
+            print(f"Parking Lot Found: {xNewPos,yNewPos}")
+            return
+
 
         if possibleMoves:
             '''
