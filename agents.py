@@ -2,55 +2,110 @@ import mesa
 from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
-
+import model
 
 class CarAgent(mesa.Agent):
-    # Decide which position the car starts, will be done in the model.
-    def __init__(self, model, startPosition, isParked, destinationPosition):
-        super().__init__(model)
-        self.startPosition = startPosition
-        self.isParked = isParked
-        self.destination = destinationPosition
+    def _init_(self, model, has_parked):
+        super()._init_(model)
+        self.model = model
+        self.destination = None 
+        self.has_parked = has_parked 
+        
 
     def move(self):
-        '''
-        Possible PSEUDOCODE:
+        if self.destination:
+            next_moves = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+            possible_moves = [move for move in next_moves if self.valid_move(move)]
+            #agregar lo de valid direction 
 
-        1. Check if car is parked:
-          If the car is parked and doesn't need to move we don't advance the movement.
-
-        2. Check for Semaphore near you.
-          IF there is and it's green we can continue.
-          If not we don't advance.
-
-        3. Check for any car that is in front or right,left...:
-          If there is no car in front or right,left:
-        '''
-
-        if self.isParked:
-            return
+            if possible_moves:
+                new_position = min(possible_moves, key=lambda x: self.distance_to_destination(x))
+                if not self.is_blocked_by_semaphore(new_position):
+                    if self in self.model.grid.get_cell_list_contents([self.pos]):
+                        self.model.grid.remove_agent(self)
+                    self.model.grid.place_agent(self, new_position)
+                    self.pos = new_position
+                    if self.pos == self.destination:
+                        self.has_parked = True
+                        self.check_relocation()
 
     def park(self):
-        '''
-        Would only change the variables property.
-        '''
+        if self.destination:  
+            parking_layer = self.model.grid.properties["parkingLayer"]
+            if parking_layer.get_cell(self.destination) == 30:  
+                parking_layer.set_cell(self.destination, 20)  
+                self.model.grid.remove_agent(self)  
+                self.model.grid.place_agent(self, self.destination)  
+                self.pos = self.destination  
+                self.has_parked = True  
+
+
+    def check_relocation(self):
+        parking_layer = self.model.grid.properties["parkingLayer"]
+        if parking_layer.get_cell(self.pos) == 20:
+            self.model.cars_relocated += 1
+
+
+    def valid_move(self, pos):
+        #x,y = pos 
+        if self.grid.properties["buildinglayer"].data[pos.x,pos.y] == 1:
+            return False
+        return self.valid_direction(pos)
+    
+    #ver que no haya un carro adelante 
+    def valid_car(self,pos):
+            neighbors = self.model.grid.get_neighborhood(pos, moore=False, include_center=False)
+            for neighbor in neighbors:
+                cell_contents = self.model.grid.get_cell_list_contents([neighbor])  
+                if any(isinstance(agent, CarAgent) for agent in cell_contents):  
+                    return False  
+            return True
+
+    def valid_direction(self,pos):
+        Right_layer = self.model.grid.properties["RightLayer"]
+        Left_layer = self.model.grid.properties["LeftLayer"]
+        Up_layer = self.model.grid.properties["UpLayer"]
+        Down_layer = self.model.grid.properties["buildLayer"]
+
+        current_x, current_y = self.pos
+        new_x, new_y = pos
+
+        if new_x > current_x:
+            current_direction = "Down"
+        elif new_x < current_x:
+            current_direction = "Up"
+        elif new_y > current_y:
+            current_direction = "Right"
+        elif new_y < current_y:
+            current_direction = "Left"
+        else:
+            return False
+
+        if current_direction == "Right" and Right_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Left" and Left_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Up" and Up_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Down" and Down_layer.get_cell(pos) <= 0:
+            return True
+        
+        return False
+            
+
+    def trafficLightCondition(self, pos):
+        #40 is green 50 is red 
+        if self.grid.properties["Sempahores"].data[pos.x,pos.y] == 40: 
+            return True
+        return False 
+        
 
     def step(self):
-        # The decision to move will always happen, just how it's going to work, will be
-        # Diff for the
-        self.move()
-
-
-'''
-Depending on how me want to work with the information and the sempahore:
-AKA Use just bool or have red,green,yellow
-Each approach would be different.
-The following approach will be with bool:
-'''
-
-'''
-
-'''
+        if not self.has_parked:
+            if self.destination is None:
+                self.find_parking_spot()
+            else:
+                self.move()
 
 class TrafficLightAgent(mesa.Agent):
     def __init__(self, model, idSemaphore,coordinatesPosition,Status):
