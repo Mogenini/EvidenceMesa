@@ -11,56 +11,34 @@ class CarAgent(mesa.Agent):
         self.destination = None 
         self.has_parked = has_parked 
         
-    #definir estacionamiento aleatorio 
+    def park(self):
+            if self.destination:  
+                parking_layer = self.model.grid.properties["parkingLayer"]
+                if parking_layer.get_cell(self.destination) == 30:  
+                    parking_layer.set_cell(self.destination, 20)  
+                    self.model.grid.remove_agent(self)  
+                    self.model.grid.place_agent(self, self.destination) 
+                    self.pos = self.destination  
+                    self.has_parked = True  
 
-    #como lo quiere el profe 
-    #llegar a un coordinada y comprobar si esta ocupada o no 
-    def find_parking_spot(self):
-        parking_layer = self.model.grid.properties["parkingLayer"]
-        for (x, y), value in np.ndenumerate(parking_layer.data):
-            if value == 30:  # 30 representa un estacionamiento disponible
-                self.destination = (x, y)
-                parking_layer.set_cell((x, y), 20)  # Reservar el espacio
-                return True
-        return False
-
-
-    def move(self):
-        """Mueve el auto hacia su destino evitando edificios y respetando semáforos."""
-        if self.destination:
-            next_moves = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
-            possible_moves = [move for move in next_moves if self.valid_move(move)]
-            #agregar lo de valid direction 
-
-            if possible_moves:
-                new_position = min(possible_moves, key=lambda x: self.distance_to_destination(x))
-                if not self.is_blocked_by_semaphore(new_position):
-                    if self in self.model.grid.get_cell_list_contents([self.pos]):
-                        self.model.grid.remove_agent(self)
-                    self.model.grid.place_agent(self, new_position)
-                    self.pos = new_position
-                    if self.pos == self.destination:
-                        self.has_parked = True
-                        self.check_relocation()
-
-    def check_relocation(self):
-        """Verifica si el auto se trasladó entre estacionamientos."""
-        parking_layer = self.model.grid.properties["parkingLayer"]
-        if parking_layer.get_cell(self.pos) == 20:
-            self.model.cars_relocated += 1
-
-
+    #verificar que no haya un edificio 
     def valid_move(self, pos):
         #x,y = pos 
         if self.grid.properties["buildinglayer"].data[pos.x,pos.y] == 1:
             return False
         return self.valid_direction(pos)
     
-    #ver que no haya un carro adelante 
-    def valid_car(self,pos)
+    #verificar que no haya un carro adelante 
+    def valid_car(self,pos):
+        neighbors = self.model.grid.get_neighborhood(pos, moore=False, include_center=False)
+        for neighbor in neighbors:
+            cell_contents = self.model.grid.get_cell_list_contents([neighbor])  
+            if any(isinstance(agent, CarAgent) for agent in cell_contents):  
+                return False  
+        return True 
 
 
-
+    #verificar a donde te puedes mover 
     def valid_direction(self,pos):
         Right_layer = self.model.grid.properties["RightLayer"]
         Left_layer = self.model.grid.properties["LeftLayer"]
@@ -98,45 +76,62 @@ class CarAgent(mesa.Agent):
         if self.grid.properties["Sempahores"].data[pos.x,pos.y] == 40: 
             return True
         return False 
+
+def move(self):
+
+    if self.has_parked:  
+        return
+
+    if self.destination:  
+        next_moves = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+
+        # Filtrar los movimientos válidos según las reglas
+        possible_moves = [
+            move for move in next_moves
+            if self.valid_move(move) and self.valid_direction(move) and not self.is_blocked_by_semaphore(move)
+        ]
+
+        if possible_moves:  # Si hay movimientos válidos
+            # Seleccionar el movimiento más cercano al destino
+            new_position = min(possible_moves, key=lambda x: self.distance_to_destination(x))
+
+            # Verificar si hay un carro en el próximo movimiento
+            if not self.valid_car(new_position):
+                # Intentar cambiar de carril
+                side_moves = self.get_side_moves(new_position)
+                side_moves = [
+                    move for move in side_moves
+                    if self.valid_move(move) and self.valid_direction(move) and self.valid_car(move) and not self.is_blocked_by_semaphore(move)
+                ]
+
+                if side_moves:
+                    # Si hay movimientos laterales válidos, elige el más cercano al destino
+                    new_position = min(side_moves, key=lambda x: self.distance_to_destination(x))
+                else:
+                    # No puede cambiar de carril ni avanzar, termina el movimiento
+                    print(f"Car {self.unique_id}: No puede avanzar ni cambiar de carril.")
+                    return
+
+            # Mover al agente a la posición seleccionada
+            self.model.grid.move_agent(self, new_position)
+            self.pos = new_position
+
+            # Si llegó al destino, intentar estacionarse
+            if self.pos == self.destination:
+                self.park()
         
 
     def step(self):
-        """Busca estacionamiento o se mueve hacia él."""
-        if not self.has_parked:
-            if self.destination is None:
-                self.find_parking_spot()
-            else:
-                self.move()
+
+        if self.has_parked:  # Si ya está estacionado, no hace nada
+            return
+
+        if not self.destination:  # Si no tiene destino, buscar espacio de estacionamiento
+            self.find_parking_spot()
+        else:
+            self.move()  # Moverse hacia el destino
+
+            if self.pos == self.destination:  # Si llegó al destino, estacionarse
+                self.park()
 
 
-
-
-
-
-   def park(self):
-      #Park implementar 
-      #moore property
-      neighbors = self.model.grid.get_neighbors(self.pos, moore = True, include_center=False, radius = 1)
-      found_parking_spot = False
-
-      for neighbor_pos in neighbors:
-        if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
-           self.model.grid.move_agent(self, neighbor_pos)
-           self.isParked = True
-           found_parking_spot = True
-           break
-        
-      if not found_parking_spot:
-         radius = 2
-         while not found_parking_spot and radius <= 3:
-            extended_neighbors = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=radius)
-            for neighbor_pos in extended_neighbors:
-                if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
-                    self.model.grid.move_agent(self, neighbor_pos)
-                    self.isParked = True
-                    found_parking_spot = True
-                    break
-            radius += 1
-      '''
-      Would only change the variables property. Implemented the logic behind the neighbors
-      '''
