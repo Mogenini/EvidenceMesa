@@ -45,29 +45,13 @@ coordinateStructures = {
         (14,14), (14,15), (15,14), (15,15), (18,15), (18,16)
     ],
 
-    "Right":[(2, 23), (3, 23), (4, 23), (5, 23), (6, 23), (7, 23), (8, 23), (9, 23), (10, 23), (11, 23), (12, 23), (13, 23), (14, 23), (15, 23), (16, 23), (17, 23), (18, 23), (19, 23), 
-    (20, 23), (21, 23), (22, 23), (23, 23), (2, 24), (3, 24), (4, 24), (5, 24), (6, 24), (7, 24), (8, 24), (9, 24), (10, 24), (11, 24), (12, 24), (13, 24), (14, 24), (15, 24), (16, 24),
-    (17, 24), (18, 24), (19, 24), (20, 24), (21, 24), (22, 24), (23, 24), (2, 15), (3, 15), (4, 15), (5, 15), (6, 15), (7, 15), (8, 15), (9, 15), (10, 15), (11, 15), (12, 15), (2, 16), 
-    (3, 16), (4, 16), (5, 16), (6, 16), (7, 16), (8, 16), (9, 16), (10, 16), (11, 16), (12, 16), (17, 15), (18, 15), (19, 15), (20, 15), (21, 15), (22, 15), (23, 15), (17, 16), (18, 16),
-    (19, 16), (20, 16), (21, 16), (22, 16), (23, 16), (8, 19), (9, 19), (10, 19), (11, 19), (12, 19), (13, 19), (8, 20), (9, 20), (10, 20), (11, 20), (12, 20), (13, 20)],
+    "Right":[(22, 1), (22, 22), (23, 1), (23, 22), (14, 1), (14, 11), (15, 1), (15, 11),
+    (14, 16), (14, 22), (15, 16), (15, 22), (18, 7), (18, 12), (19, 7), (19, 12],
 
-    "Left":[(2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1), (10, 1), (11, 1), (12, 1), (13, 1), (14, 1), (15, 1), (16, 1), (17, 1), (18, 1), (19, 1), (20, 1), (21, 1), (22, 1),
-    (23, 1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2), (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2), (16, 2), (17, 2), (18, 2), (19, 2), (20, 2), (21, 2), (22, 2), 
-    (23, 2), (16, 7), (17, 7), (18, 7), (19, 7), (20, 7), (21, 7), (22, 7), (23, 7), (16, 8), (17, 8), (18, 8), (19, 8), (20, 8), (21, 8), (22, 8), (23, 8), (8, 7), (9, 7), (10, 7), (11, 7), (12, 7),
-    (13, 7), (8, 8), (9, 8), (10, 8), (11, 8), (12, 8), (13, 8), (17, 13), (18, 13), (19, 13), (20, 13), (21, 13), (22, 13), (23, 13), (17, 14), (18, 14), (19, 14), (20, 14), (21, 14), (22, 14), (23, 14),
-    (2, 13), (3, 13), (4, 13), (5, 13), (6, 13), (7, 13), (8, 13), (9, 13), (10, 13), (11, 13), (12, 13), (2, 14), (3, 14), (4, 14), (5, 14), (6, 14), (7, 14), (8, 14), (9, 14), (10, 14), (11, 14), (12, 14),
-    (2, 19), (3, 19), (4, 19), (5, 19), (6, 19), (7, 19), (2, 20), (3, 20), (4, 20), (5, 20), (6, 20), (7, 20)] ,
 
-    "Up":[(23, 2), (23, 3), (23, 4), (23, 5), (23, 6), (23, 7), (23, 8), (23, 9), (23, 10), (23, 11), (23, 12), (23, 13), (23, 14), (23, 15), (23, 16), (23, 17), (23, 18), (23, 19), (23, 20), (23, 21), (23, 22),
-    (23, 23), (24, 2), (24, 3), (24, 4), (24, 5), (24, 6), (24, 7), (24, 8), (24, 9), (24, 10), (24, 11), (24, 12), (24, 13), (24, 14), (24, 15), (24, 16), (24, 17), (24, 18), (24, 19), (24, 20), (24, 21), (24, 22),
-    (24, 23), (15, 2), (15, 3), (15, 4), (15, 5), (15, 6), (15, 7), (15, 8), (15, 9), (15, 10), (15, 11), (15, 12), (16, 2), (16, 3), (16, 4), (16, 5), (16, 6), (16, 7), (16, 8), (16, 9), (16, 10), (16, 11), (16, 12), 
-    (15, 17), (15, 18), (15, 19), (15, 20), (15, 21), (15, 22), (15, 23), (16, 17), (16, 18), (16, 19), (16, 20), (16, 21), (16, 22), (16, 23), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9), (7, 10), 
-    (7, 11), (7, 12), (7, 13), (8, 2), (8, 3), (8, 4), (8, 5), (8, 6), (8, 7), (8, 8), (8, 9), (8, 10), (8, 11), (8, 12), (8, 13), (19, 16), (19, 17), (19, 18), (19, 19), (19, 20), (19, 21), (19, 22), (19, 23), (20, 16),
-    (20, 17), (20, 18), (20, 19), (20, 20), (20, 21), (20, 22), (20, 23)],
-
-    "Down":[(1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12), (1, 13), (1, 14), (1, 15), (1, 16), (1, 17), (1, 18), (1, 19), (1, 20), (1, 21), (1, 22), (1, 23), (2, 2), (2, 3),
-    (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (2, 20), (2, 21), (2, 22), (2, 23), (7, 17), (7, 18), (7, 19), (7, 20), (7, 21), 
-    (7, 22), (7, 23), (8, 17), (8, 18), (8, 19), (8, 20), (8, 21), (8, 22), (8, 23), (13, 3), (13, 4), (13, 5), (13, 6), (13, 7), (13, 8), (13, 9), (13, 10), (13, 11), (13, 12), (13, 13), (14, 3), (14, 4), (14, 5), (14, 6), (14, 7), (14, 8), (14, 9), (14, 10), (14, 11), (14, 12), (13, 17), (13, 18), (13, 19), (13, 20), (13, 21), (13, 22), (13, 23), (14, 17), (14, 18), (14, 19), (14, 20), (14, 21), (14, 22), (14, 23)]
+    "Left":[(0, 1), (0, 22), (1, 1), (1, 22), (6, 15), (6, 22), (7, 15), (7, 22),
+    (6, 7), (6, 12), (7, 7), (7, 12), (12, 16), (12, 22), (13, 16), (13, 22),			
+    (12, 1), (12, 11), (13, 1), (13, 11), (18, 1), (18, 6), (19, 1), (19, 6)]
 
     
 }
@@ -84,8 +68,7 @@ class CityModel(mesa.Model):
         #movement layers 
         self.RightLayer = mesa.space.PropertyLayer("RightLayer", width, height, default_value = np.float64(0))
         self.LeftLayer = mesa.space.PropertyLayer("LeftLayer", width, height, default_value = np.float64(0))
-        self.UpLayer = mesa.space.PropertyLayer("UpLayer", width, height, default_value = np.float64(0))
-        self.DownLayer = mesa.space.PropertyLayer("DownLayer", width, height, default_value = np.float64(0))
+        
 
 
         self.grid = mesa.space.MultiGrid(width,height,True,(self.buildingLayer,self.trafficLightLayer,self.parkingLayer,self.roundAboutLayer, self.RightLayer, self.LeftLayer, self.UpLayer, self.DownLayer))
@@ -99,8 +82,7 @@ class CityModel(mesa.Model):
             #movement layers 
             set_right_Layer(coordinateStructurePositions["Right"])
             set_left_Layer(coordinateStructurePositions["Left"])
-            set_up_Layer(coordinateStructurePositions["Up"])
-            set_down_Layer(coordinateStructurePositions["Down"])
+            
             return
 
         def set_buildingsLayer(buildingsArray):
@@ -129,13 +111,7 @@ class CityModel(mesa.Model):
             for x,y in coordinateStructurePositions:
                 self.grid.properties["LeftLayer"].set_cell((x, y), 40)       
 
-        def set_up_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["UpLayer"].set_cell((x, y), 50)      
-
-        def set_down_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["DownLayer"].set_cell((x, y), 60) 
+       
 
 
         set_Data_Structures(dataStructure)
@@ -146,18 +122,19 @@ class CityModel(mesa.Model):
 
         #movement layers 
         print("Right Layer Data:", self.grid.properties["RightLayer"].data)
-        print("Down Layer Data:", self.grid.properties["DownLayer"].data)
-        print("Up Layer Data:", self.grid.properties["UpLayer"].data)
-        print("Down Layer Data:", self.grid.properties["DownLayer"].data)
+        print("Left Layer Data:", self.grid.properties["LeftLayer"].data)
+        
 
 
 class CarAgent(mesa.Agent):
   #Decide which position the car starts, will be done in the model.
     def __init__(self, model, startPosition,isParked,destinationPosition):
         super().__init__(model)
+        self.model
+        #self.pos = start_pos
         self.startPosition = startPosition
-        self.isParked = isParked
-        self.destination = destinationPosition
+        self.isParked = False
+        self.destination = None
 
     def move(self):
       '''
@@ -180,6 +157,30 @@ class CarAgent(mesa.Agent):
         
 
     def park(self):
+      #Park implementar 
+      #moore property
+      neighbors = self.model.grid.get_neighbors(self.pos, moore = True, include_center=False, radius = 1)
+      found_parking_spot = False
+
+      for neighbor_pos in neighbors:
+        if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+           self.model.grid.move_agent(self, neighbor_pos)
+           self.isParked = True
+           found_parking_spot = True
+           break
+        
+      if not found_parking_spot:
+         radius = 2
+         while not found_parking_spot and radius <= 3:
+            extended_neighbors = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=radius)
+            for neighbor_pos in extended_neighbors:
+                if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+                    self.model.grid.move_agent(self, neighbor_pos)
+                    self.isParked = True
+                    found_parking_spot = True
+                    break
+            radius += 1
+        
       '''
       Would only change the variables property.
       '''
