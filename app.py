@@ -85,7 +85,6 @@ page = SolaraViz(
     name="Car Agent and Traffic Light",
 )
 
-# Configurar y lanzar Solara
 @solara.component
 def MyApp():
     page.run()
