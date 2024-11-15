@@ -78,27 +78,41 @@ class CityModel(mesa.Model):
 
 
 class CarAgent(mesa.Agent):
-  #Decide which position the car starts, will be done in the model.
-    def __init__(self, model, startPosition,isParked,destinationPosition):
+    def __init__(self, model, startPosition, isParked, destinationPosition):
         super().__init__(model)
+        self.pos = startPosition
         self.startPosition = startPosition
         self.isParked = isParked
         self.destination = destinationPosition
+        self.wait_time = 0  
+        self.max_wait_time = 5 
 
     def move(self):
-      '''
-      Possible PSEUDOCODE:
 
-      1. Check if car is parked:
-        If the car is parked and doesn't need to move we don't advance the movement.
+        if self.isParked:
+            return
+        
+        # 1. Verificar si el coche está cerca de un semáforo y si está en rojo
+        nearby_traffic_lights = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=1)
+        for neighbor in nearby_traffic_lights:
+            if isinstance(neighbor, TrafficLightAgent):
+                if not neighbor.state: 
+                    self.wait_time += 1
+                    if self.wait_time >= self.max_wait_time:
+                        self.wait_time = 0
+                    return 
 
-      2. Check for Semaphore near you.
-        IF there is and it's green we can continue.
-        If not we don't advance.
+        # 2. Verificar si hay vehículos bloqueando el camino
+        neighbors = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=1)
+        for neighbor_pos in neighbors:
+            if any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+                return
 
-      3. Check for any car that is in front or right,left...:
-        If there is no car in front or right,left:
-      '''
+        direction = self.get_direction_to_destination()
+        new_pos = self.calculate_new_position(direction)
+        if self.is_valid_move(new_pos):
+            self.model.grid.move_agent(self, new_pos)
+
 
     def park(self):
       '''
