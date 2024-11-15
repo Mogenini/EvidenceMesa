@@ -2,78 +2,141 @@ import mesa
 from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
-
+import model
 
 class CarAgent(mesa.Agent):
-    # Decide which position the car starts, will be done in the model.
-    def __init__(self, model, startPosition, isParked, destinationPosition):
+    def __init__(self, model, has_parked):
         super().__init__(model)
-        self.startPosition = startPosition
-        self.isParked = isParked
-        self.destination = destinationPosition
+        self.model = model
+        self.destination = None 
+        self.has_parked = has_parked 
+        
+    #definir estacionamiento aleatorio 
+
+    #como lo quiere el profe 
+    #llegar a un coordinada y comprobar si esta ocupada o no 
+    def find_parking_spot(self):
+        parking_layer = self.model.grid.properties["parkingLayer"]
+        for (x, y), value in np.ndenumerate(parking_layer.data):
+            if value == 30:  # 30 representa un estacionamiento disponible
+                self.destination = (x, y)
+                parking_layer.set_cell((x, y), 20)  # Reservar el espacio
+                return True
+        return False
+
 
     def move(self):
-        '''
-        Possible PSEUDOCODE:
+        """Mueve el auto hacia su destino evitando edificios y respetando semáforos."""
+        if self.destination:
+            next_moves = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+            possible_moves = [move for move in next_moves if self.valid_move(move)]
+            #agregar lo de valid direction 
 
-        1. Check if car is parked:
-          If the car is parked and doesn't need to move we don't advance the movement.
+            if possible_moves:
+                new_position = min(possible_moves, key=lambda x: self.distance_to_destination(x))
+                if not self.is_blocked_by_semaphore(new_position):
+                    if self in self.model.grid.get_cell_list_contents([self.pos]):
+                        self.model.grid.remove_agent(self)
+                    self.model.grid.place_agent(self, new_position)
+                    self.pos = new_position
+                    if self.pos == self.destination:
+                        self.has_parked = True
+                        self.check_relocation()
 
-        2. Check for Semaphore near you.
-          IF there is and it's green we can continue.
-          If not we don't advance.
-
-        3. Check for any car that is in front or right,left...:
-          If there is no car in front or right,left:
-        '''
-
-        if self.isParked:
-            return
-
-    def park(self):
-        '''
-        Would only change the variables property.
-        '''
-
-    def step(self):
-        # The decision to move will always happen, just how it's going to work, will be
-        # Diff for the
-        self.move()
+    def check_relocation(self):
+        """Verifica si el auto se trasladó entre estacionamientos."""
+        parking_layer = self.model.grid.properties["parkingLayer"]
+        if parking_layer.get_cell(self.pos) == 20:
+            self.model.cars_relocated += 1
 
 
-'''
-Depending on how me want to work with the information and the sempahore:
-AKA Use just bool or have red,green,yellow
-Each approach would be different.
-The following approach will be with bool:
-'''
+    def valid_move(self, pos):
+        #x,y = pos 
+        if self.grid.properties["buildinglayer"].data[pos.x,pos.y] == 1:
+            return False
+        return self.valid_direction(pos)
+    
+    #ver que no haya un carro adelante 
+    def valid_car(self,pos)
 
-'''
 
-'''
 
-class TrafficLightAgent(mesa.Agent):
-    def __init__(self, model, idSemaphore,coordinatesPosition,Status):
-        super().__init__(model)
-        self.clock = 0
-        self.semaphorePosition = coordinatesPosition
-        self.semaphoreId = idSemaphore
-        self.state = Status
+    def valid_direction(self,pos):
+        Right_layer = self.model.grid.properties["RightLayer"]
+        Left_layer = self.model.grid.properties["LeftLayer"]
+        Up_layer = self.model.grid.properties["UpLayer"]
+        Down_layer = self.model.grid.properties["buildLayer"]
 
-    def change_light(self):
-        if self.state:
-            self.state = False
-            for x,y in self.semaphorePosition:
-                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 50) #Change to red
+        current_x, current_y = self.pos
+        new_x, new_y = pos
 
+        if new_x > current_x:
+            current_direction = "Down"
+        elif new_x < current_x:
+            current_direction = "Up"
+        elif new_y > current_y:
+            current_direction = "Right"
+        elif new_y < current_y:
+            current_direction = "Left"
         else:
-            self.state = True
-            for x,y in self.semaphorePosition:
-                self.model.grid.properties["trafficLightLayer"].set_cell((x, y), 40) #Change to red
+            return False
 
+        if current_direction == "Right" and Right_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Left" and Left_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Up" and Up_layer.get_cell(pos) <= 0:
+            return True
+        elif current_direction == "Down" and Down_layer.get_cell(pos) <= 0:
+            return True
+        
+        return False
+            
+
+    def trafficLightCondition(self, pos):
+        #40 is green 50 is red 
+        if self.grid.properties["Sempahores"].data[pos.x,pos.y] == 40: 
+            return True
+        return False 
+        
 
     def step(self):
-        self.clock += 1
-        if self.clock == 1:
-            self.change_light()
-            clock = 0
+        """Busca estacionamiento o se mueve hacia él."""
+        if not self.has_parked:
+            if self.destination is None:
+                self.find_parking_spot()
+            else:
+                self.move()
+
+
+
+
+
+
+   def park(self):
+      #Park implementar 
+      #moore property
+      neighbors = self.model.grid.get_neighbors(self.pos, moore = True, include_center=False, radius = 1)
+      found_parking_spot = False
+
+      for neighbor_pos in neighbors:
+        if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+           self.model.grid.move_agent(self, neighbor_pos)
+           self.isParked = True
+           found_parking_spot = True
+           break
+        
+      if not found_parking_spot:
+         radius = 2
+         while not found_parking_spot and radius <= 3:
+            extended_neighbors = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=radius)
+            for neighbor_pos in extended_neighbors:
+                if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+                    self.model.grid.move_agent(self, neighbor_pos)
+                    self.isParked = True
+                    found_parking_spot = True
+                    break
+            radius += 1
+      '''
+      Would only change the variables property. Implemented the logic behind the neighbors
+      '''

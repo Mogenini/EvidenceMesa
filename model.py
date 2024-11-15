@@ -5,30 +5,7 @@ import seaborn as sns
 import agents
 
 class CityModel(mesa.Model):
-    def printGrid():
-        # Dimensions of the grid
-        grid_height = len(self.grid.properties["buildingLayer"].data)
-        grid_width = len(self.grid.properties["buildingLayer"].data[0])
-
-        for y in range(grid_height):
-            row = ""
-            for x in range(grid_width):
-                # Check each layer for the current position (x, y)
-                building = self.grid.properties["buildingLayer"].data[y][x]
-                traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
-                parking = self.grid.properties["parkingLayer"].data[y][x]
-
-                # Determine the symbol for each cell based on layer presence
-                if building:
-                    row += "B "  # B for Building
-                elif traffic_light:
-                    row += "T "  # T for Traffic Light
-                elif parking:
-                    row += "P "  # P for Parking
-                else:
-                    row += ". "  # . for empty space
-            print(row)
-
+  
     def __init__(self, n, width, height, dataStructure ,seed=None):
         super().__init__(seed=seed)
         self.num_Cars = n
@@ -42,6 +19,8 @@ class CityModel(mesa.Model):
         self.UpLayer = mesa.space.PropertyLayer("UpLayer", width, height, default_value = np.float64(0))
         self.DownLayer = mesa.space.PropertyLayer("DownLayer", width, height, default_value = np.float64(0))
 
+        self.CarLayer = mesa.space.PropertyLayer("CarLayer", width, height, default_value = np.float64(0))
+
 
         self.grid = mesa.space.MultiGrid(width,height,True,(self.buildingLayer,
                                                             self.trafficLightLayer,
@@ -49,7 +28,8 @@ class CityModel(mesa.Model):
                                                             self.RightLayer,
                                                             self.LeftLayer,
                                                             self.UpLayer,
-                                                            self.DownLayer))
+                                                            self.DownLayer,),
+                                                            self.CarLayer)
 
         def set_Data_Structures(coordinateStructurePositions):
             set_buildingsLayer(coordinateStructurePositions["Buildings"])
@@ -58,10 +38,10 @@ class CityModel(mesa.Model):
 
 
             #movement layers
-            #set_right_Layer(coordinateStructurePositions["Right"])
-            #set_left_Layer(coordinateStructurePositions["Left"])
-            #set_up_Layer(coordinateStructurePositions["Up"])
-            #set_down_Layer(coordinateStructurePositions["Down"])
+            set_right_Layer(coordinateStructurePositions["Right"])
+            set_left_Layer(coordinateStructurePositions["Left"])
+            set_up_Layer(coordinateStructurePositions["Up"])
+            set_down_Layer(coordinateStructurePositions["Down"])
             return
 
         def set_buildingsLayer(buildingsArray):
@@ -105,6 +85,7 @@ class CityModel(mesa.Model):
             for x,y in coordinateStructurePositions:
                 self.grid.properties["DownLayer"].set_cell((x, y), 60)
 
+        
 
         set_Data_Structures(dataStructure)
 
@@ -119,7 +100,54 @@ class CityModel(mesa.Model):
                 status = value
             agents.TrafficLightAgent(self,idSemaphore,coords,status)
 
-        self.printGrid()
+
+        #Create Car Agents
+        building_layer = model.grid.properties["buildingLayer"].data 
+        for idCar in range(n):  # `n` es el número de carros a inicializar
+            # Obtener posiciones válidas (sin edificios)
+            valid_positions = [
+                (x, y) for (x, y), value in np.ndenumerate(building_layer) if value == 0
+            ]
+
+            if valid_positions:  # Si hay posiciones válidas
+                random_position = random.choice(valid_positions)  # Elegir una posición aleatoria
+
+                # Crear el carro y asignar posición
+                car = CarAgent(model)
+                car.pos = random_position
+
+                # Colocar el carro en la cuadrícula
+                model.grid.place_agent(car, random_position)
+
+                # Eliminar la posición seleccionada de las válidas para evitar duplicados
+                valid_positions.remove(random_position)
+
+
+        def printGrid():
+        # Dimensions of the grid
+        grid_height = len(self.grid.properties["buildingLayer"].data)
+        grid_width = len(self.grid.properties["buildingLayer"].data[0])
+
+        for y in range(grid_height):
+            row = ""
+            for x in range(grid_width):
+                # Check each layer for the current position (x, y)
+                building = self.grid.properties["buildingLayer"].data[y][x]
+                traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
+                parking = self.grid.properties["parkingLayer"].data[y][x]
+
+                # Determine the symbol for each cell based on layer presence
+                if building:
+                    row += "B "  # B for Building
+                elif traffic_light:
+                    row += "T "  # T for Traffic Light
+                elif parking:
+                    row += "P "  # P for Parking
+                else:
+                    row += ". "  # . for empty space
+            print(row)
+
+        printGrid()
 
     def step(self):
         self.agents_by_type[agents.TrafficLightAgent].shuffle_do("step")
