@@ -10,15 +10,13 @@
 ---
 
 ## Project Overview
-This project simulates a working city environment using a multi-agent model. The simulation focuses on replicating urban dynamics through the interaction of agents and city elements.  
+This project simulates a working city environment using a multi-agent model. 
 
 ### Features  
 - **Collision Detection**: Real-time detection of potential collisions between agents.  
 - **Traffic Flow**: Agents navigate the city while adhering to predefined street directions.  
 - **Collisions**: Simulates possible collisions between agents, highlighting traffic behavior and potential risks.  
 - **Semaphores**: Integration of traffic lights to control flow and emulate real-world street regulation.  
-
-The goal is to create a realistic and functional simulation of urban dynamics that can be used for educational, analytical, or research purposes.  
 
 ---
 
