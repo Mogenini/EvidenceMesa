@@ -67,7 +67,8 @@ Go to Window > Package Manager.
 
 Search for ProBuilder in the Unity Registry.
 
-Click Install.
+Click install
+
 ---
 
 ## Credits Prebas Unity
