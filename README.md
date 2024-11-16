@@ -5,7 +5,6 @@
 - Mariana Fernández de la Torre
 - Marcela Hernández Ramírez    
 - Fernando Emiliano Tavera Moreno  
-Working City Simulation Project / Evidence
 
 
 
