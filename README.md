@@ -1,37 +1,78 @@
-Working City Simulation Project / Evidence
+# Working City Simulation Project / Evidence
 
-Team Members:
-Santiago Moreno Lacalle Quintero
-Mariana Fernández de la Torre
-Fernando Emiliano Tavera Moreno
-Marcela Hernández Ramírez
+## Team Members
+- Santiago Moreno Lacalle Quintero  
+- Mariana Fernández de la Torre
+- Marcela Hernández Ramírez    
+- Fernando Emiliano Tavera Moreno  
 
-Project Overview:
-This project simulates a working city environment using a multi-agent model. 
-Some of the features are: 
-Collision Detection: Car agents can 
-Traffic flow: Agents navigate the city while adhering to defined directions of streets.
-Collisions: Simulation of possible collisions between agents, highlighting traffic behavior and potential risks.
-Semaphores: Integration of traffic lights to control flow and simulate real-world street regulation.
-The goal is to create a realistic and functional simulation of urban dynamics that can be used for educational, analytical, or research purposes.
 
-Key Features:
-Agent-Based Modeling:
-Different agents represent vehicles, pedestrians, and other city entities, each with distinct behaviors and decision-making processes.
+---
 
-Grid System:
-A grid-based representation of the city, with designated areas for parking, streets, and intersections.
+## Project Overview
+This project simulates a working city environment using a multi-agent model. The simulation focuses on replicating urban dynamics through the interaction of agents and city elements.  
 
-Collision Detection:
-Real-time collision detection between agents to simulate accidents or blocked pathways.
+### Features  
+- **Collision Detection**: Real-time detection of potential collisions between agents.  
+- **Traffic Flow**: Agents navigate the city while adhering to predefined street directions.  
+- **Collisions**: Simulates possible collisions between agents, highlighting traffic behavior and potential risks.  
+- **Semaphores**: Integration of traffic lights to control flow and emulate real-world street regulation.  
 
-Traffic Control:
-Semaphores regulate traffic flow, emulating real-world signal systems.
+The goal is to create a realistic and functional simulation of urban dynamics that can be used for educational, analytical, or research purposes.  
 
-Dynamic Directions:
-Streets have predefined directions, influencing agent movement and creating realistic traffic scenarios.
+---
 
-How It Works:
-The simulation initializes with a set of agents, each assigned a starting and ending position. Vehicles can either start in a parking lot or on the streets. Traffic lights and street directions guide their movement, and collision mechanisms handle potential interactions between agents.
+## Key Features
 
-The simulation is powered by a grid-based system, where agents interact with predefined properties such as parking areas and traffic signals.
+### **Agent-Based Modeling**  
+- Different agents represent vehicles, pedestrians, and other city entities.  
+- Each agent type has distinct behaviors and decision-making processes.
+
+### **Grid System**  
+- The city is represented as a grid with designated areas for parking, streets, and intersections.  
+
+### **Collision Detection**  
+- Real-time collision detection simulates accidents or blocked pathways.  
+
+### **Traffic Control**  
+- Traffic lights (semaphores) regulate the flow of agents, mimicking real-world systems.  
+
+### **Dynamic Directions**  
+- Streets have predefined one-way or two-way directions, influencing agent movement and creating realistic traffic scenarios.  
+
+---
+
+## How It Works
+1. **Initialization**  
+   - The simulation begins with a set of agents, each assigned starting and destination points.  
+   - Vehicles can start either in a parking lot or on the streets.  
+
+2. **Agent Movement**  
+   - Agents navigate the grid, guided by traffic lights and street directions.  
+
+3. **Collision Management**  
+   - Collision mechanisms handle interactions between agents, simulating accidents or blocked paths.  
+
+4. **City Elements**  
+   - The simulation utilizes a grid-based system where agents interact with predefined properties such as parking areas, intersections, and traffic signals.  
+
+---
+
+## Credits
+
+The following assets were used under their respective licenses:
+
+1. **[City Traffic Lights Pack](https://assetstore.unity.com/packages/3d/environments/urban/city-traffic-lights-pack-free-low-poly-3d-art-154053)**  
+   - Traffic light models.
+
+2. **[City Package](https://assetstore.unity.com/packages/3d/environments/urban/city-package-107224)**  
+   - Buildings and urban props.
+
+3. **[SimplePoly City](https://assetstore.unity.com/packages/3d/environments/simplepoly-city-low-poly-assets-58899)**  
+   - Low-poly city models.
+
+4. **[Fantasy Skybox](https://assetstore.unity.com/packages/2d/textures-materials/sky/fantasy-skybox-free-18353)**  
+   - Skybox for the scene.
+
+---
+
