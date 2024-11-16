@@ -142,7 +142,7 @@ class CityModel(mesa.Model):
                     startingPosition = self.random.choice(list(availablePositions))
                     availableParkinLot.discard(startingPosition)
                     availableParkinLot.discard(startingPosition)
-                    endingPosition = self.random.choice(list(availablePositions))
+                    endingPosition = self.random.choice(list(availableParkinLot))
                     availableParkinLot.discard(endingPosition)
                     availablePositions.discard(endingPosition)
                 else:
@@ -152,6 +152,7 @@ class CityModel(mesa.Model):
             carAgent = agents.CarAgent(self, isParked, startingPosition, endingPosition)  # model, isParked, startingPosition, endingPosition
             print(f"Starting Position: {startingPosition} and ending position {endingPosition}")
             self.grid.place_agent(carAgent, (startingPosition[0],startingPosition[1]))
+
 
     def step(self):
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
