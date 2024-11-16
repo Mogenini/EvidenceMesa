@@ -5,72 +5,25 @@
 - Mariana Fernández de la Torre
 - Marcela Hernández Ramírez    
 - Fernando Emiliano Tavera Moreno  
+Working City Simulation Project / Evidence
 
 
----
 
-## Project Overview
+## Project Overview:
 This project simulates a working city environment using a multi-agent model. 
+Some of the features are: 
+Collision Detection: Car agents can avoid and depending on the situation and the movements that it will be doing after making a step. This also permit's us to maintain realism to the simulation, which helps us in understanding how a model and differnte types of agent work. 
+Semaphores: Integration of traffic lights to control flow and simulate real-world street regulation.
 
-### Features  
-- **Collision Detection**: Real-time detection of potential collisions between agents.  
-- **Traffic Flow**: Agents navigate the city while adhering to predefined street directions.  
-- **Collisions**: Simulates possible collisions between agents, highlighting traffic behavior and potential risks.  
-- **Semaphores**: Integration of traffic lights to control flow and emulate real-world street regulation.  
+The goal of this project is to learn about how we could program differente models and agents. 
 
----
+## How the program works:
 
-## Key Features
+The simulation initializes with a set of agents, each assigned a starting and ending position. Vehicles can either start in a parking lot or on the streets. Traffic lights and street directions guide their movement, and collision mechanisms handle potential interactions between agents.
 
-### **Agent-Based Modeling**  
-- Different agents represent vehicles, pedestrians, and other city entities.  
-- Each agent type has distinct behaviors and decision-making processes.
+To run the program, please install all of the dependencies and to run the code use the following:
 
-### **Grid System**  
-- The city is represented as a grid with designated areas for parking, streets, and intersections.  
-
-### **Collision Detection**  
-- Real-time collision detection simulates accidents or blocked pathways.  
-
-### **Traffic Control**  
-- Traffic lights (semaphores) regulate the flow of agents, mimicking real-world systems.  
-
-### **Dynamic Directions**  
-- Streets have predefined one-way or two-way directions, influencing agent movement and creating realistic traffic scenarios.  
-
----
-
-## How It Works
-1. **Initialization**  
-   - The simulation begins with a set of agents, each assigned starting and destination points.  
-   - Vehicles can start either in a parking lot or on the streets.  
-
-2. **Agent Movement**  
-   - Agents navigate the grid, guided by traffic lights and street directions.  
-
-3. **Collision Management**  
-   - Collision mechanisms handle interactions between agents, simulating accidents or blocked paths.  
-
-4. **City Elements**  
-   - The simulation utilizes a grid-based system where agents interact with predefined properties such as parking areas, intersections, and traffic signals.  
-
----
-## Requirements
-To Run and Edit the Project
-
-Ensure Unity is installed on your system.
-
-Install ProBuilder:
-Open Unity.
-
-Go to Window > Package Manager.
-
-Search for ProBuilder in the Unity Registry.
-
-Click install
-
----
-
+solara run app.py
 ## Credits Prebas Unity
 
 The following assets were used under their respective licenses:
