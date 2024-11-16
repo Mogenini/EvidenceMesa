@@ -4,64 +4,53 @@ import numpy as np
 import seaborn as sns
 import agents
 
+# Function to set cells in a specified layer
+def set_layer(self, coordinate_dict, layer_name):
+    for item in coordinate_dict:
+        direction, start, end = item
+        if direction == "Y":
+            x = start[0]
+            for y in range(start[1], end[1] + 1):
+                self.grid.properties[layer_name].set_cell((x, y), 1)
+        elif direction == "X":
+            y = start[1]
+            for x in range(start[0], end[0] + 1):
+                self.grid.properties[layer_name].set_cell((x, y), 1)
+
 class CityModel(mesa.Model):
-    def printGrid():
-        # Dimensions of the grid
-        grid_height = len(self.grid.properties["buildingLayer"].data)
-        grid_width = len(self.grid.properties["buildingLayer"].data[0])
-
-        for y in range(grid_height):
-            row = ""
-            for x in range(grid_width):
-                # Check each layer for the current position (x, y)
-                building = self.grid.properties["buildingLayer"].data[y][x]
-                traffic_light = self.grid.properties["trafficLightLayer"].data[y][x]
-                parking = self.grid.properties["parkingLayer"].data[y][x]
-
-                # Determine the symbol for each cell based on layer presence
-                if building:
-                    row += "B "  # B for Building
-                elif traffic_light:
-                    row += "T "  # T for Traffic Light
-                elif parking:
-                    row += "P "  # P for Parking
-                else:
-                    row += ". "  # . for empty space
-            print(row)
-
-    def __init__(self, n, width, height, dataStructure ,seed=None):
+    def __init__(self, n=1, width=24, height=24, dataStructure=None, seed=None):
         super().__init__(seed=seed)
-        self.num_Cars = n
-        self.buildingLayer = mesa.space.PropertyLayer("buildingLayer", width, height, default_value = np.float64(0))
-        self.trafficLightLayer = mesa.space.PropertyLayer("trafficLightLayer", width, height, default_value = np.float64(0) )
-        self.parkingLayer = mesa.space.PropertyLayer("parkingLayer", width, height, default_value = np.float64(0))
+        self.n = n
+        self.width = width
+        self.height = height
+        self.buildingLayer = mesa.space.PropertyLayer("buildingLayer", self.width, self.height, default_value=np.float64(0))
+        self.trafficLightLayer = mesa.space.PropertyLayer("trafficLightLayer", self.width, self.height, default_value=np.float64(0))
+        self.parkingLayer = mesa.space.PropertyLayer("parkingLayer", self.width, self.height, default_value=np.float64(0))
 
-        #movement layers
-        self.RightLayer = mesa.space.PropertyLayer("RightLayer", width, height, default_value = np.float64(0))
-        self.LeftLayer = mesa.space.PropertyLayer("LeftLayer", width, height, default_value = np.float64(0))
-        self.UpLayer = mesa.space.PropertyLayer("UpLayer", width, height, default_value = np.float64(0))
-        self.DownLayer = mesa.space.PropertyLayer("DownLayer", width, height, default_value = np.float64(0))
+        # Movement layers
+        self.RightLayer = mesa.space.PropertyLayer("RightLayer", self.width, self.height, default_value=np.float64(0))
+        self.LeftLayer = mesa.space.PropertyLayer("LeftLayer", self.width, self.height, default_value=np.float64(0))
+        self.UpLayer = mesa.space.PropertyLayer("UpLayer", self.width, self.height, default_value=np.float64(0))
+        self.DownLayer = mesa.space.PropertyLayer("DownLayer", self.width, self.height, default_value=np.float64(0))
 
-
-        self.grid = mesa.space.MultiGrid(width,height,True,(self.buildingLayer,
-                                                            self.trafficLightLayer,
-                                                            self.parkingLayer,
-                                                            self.RightLayer,
-                                                            self.LeftLayer,
-                                                            self.UpLayer,
-                                                            self.DownLayer))
+        self.grid = mesa.space.MultiGrid(width, height, True, (self.buildingLayer,
+                                                               self.trafficLightLayer,
+                                                               self.parkingLayer,
+                                                               self.RightLayer,
+                                                               self.LeftLayer,
+                                                               self.UpLayer,
+                                                               self.DownLayer))
 
         def set_Data_Structures(coordinateStructurePositions):
             set_buildingsLayer(coordinateStructurePositions["Buildings"])
             set_traffic_lightsLayer(coordinateStructurePositions["Semaphores"])
             set_parking_lotsLayer(coordinateStructurePositions["Parking_Lots"])
 
-
-            #movement layers
-            #set_right_Layer(coordinateStructurePositions["Right"])
-            #set_left_Layer(coordinateStructurePositions["Left"])
-            #set_up_Layer(coordinateStructurePositions["Up"])
-            #set_down_Layer(coordinateStructurePositions["Down"])
+            # Movement layers
+            set_left_Layer(coordinateStructurePositions["Left"])
+            set_right_Layer(coordinateStructurePositions["Right"])
+            set_up_Layer(coordinateStructurePositions["Up"])
+            set_down_Layer(coordinateStructurePositions["Down"])
             return
 
         def set_buildingsLayer(buildingsArray):
@@ -72,54 +61,99 @@ class CityModel(mesa.Model):
             for coordinate_pair in coordinateStructurePositions:
                 for (x, y), isOn in coordinate_pair:
                     if isOn:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 40)
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 1)
                     else:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 50)
+                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 2)
 
         def set_parking_lotsLayer(coordinateStructurePositions):
-            for (x,y),isOccupied in coordinateStructurePositions:
+            for (x, y), isOccupied in coordinateStructurePositions:
                 if isOccupied:
-                    self.grid.properties["parkingLayer"].set_cell((x, y), 20)
+                    self.grid.properties["parkingLayer"].set_cell((x, y), 2)  # 2 occupied
                 else:
-                    self.grid.properties["parkingLayer"].set_cell((x, y), 30)
+                    self.grid.properties["parkingLayer"].set_cell((x, y), 1)
 
-        def set_round_aboutsLayer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["roundAboutLayer"].set_cell((x, y), 10)
-
-
-        #movement layers
+        # Movement layers
         def set_right_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["RightLayer"].set_cell((x, y), 30) #si va este valor?
+            set_layer(self, coordinateStructurePositions, "RightLayer")
 
         def set_left_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["LeftLayer"].set_cell((x, y), 40)
+            set_layer(self, coordinateStructurePositions, "LeftLayer")
 
         def set_up_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["UpLayer"].set_cell((x, y), 50)
+            set_layer(self, coordinateStructurePositions, "UpLayer")
 
         def set_down_Layer(coordinateStructurePositions):
-            for x,y in coordinateStructurePositions:
-                self.grid.properties["DownLayer"].set_cell((x, y), 60)
-
+            set_layer(self, coordinateStructurePositions, "DownLayer")
 
         set_Data_Structures(dataStructure)
+        print(self.grid.properties["LeftLayer"].data)
 
-
-        #Create Traffic Light Agents
-
+        # Create Traffic Light Agents
         for idSemaphore in dataStructure["Semaphores"]:
             coords = []
             status = False
-            for (x,y),value in idSemaphore:
-                coords.append((x,y))
+            for (x, y), value in idSemaphore:
+                coords.append((x, y))
                 status = value
-            agents.TrafficLightAgent(self,idSemaphore,coords,status)
+            agents.TrafficLightAgent(self, idSemaphore, coords, status)
 
-        self.printGrid()
+        '''
+        Create car Agent:
+        '''
+
+        def createCarInParking(availableParkinLot, availablePositions):
+            '''
+            I know this can be simplified, but adding a condition that will always make the agent appear at least
+            one time in the parking position
+            '''
+            startingPosition = self.random.choice(list(availableParkinLot))
+            availableParkinLot.discard(startingPosition)
+            availablePositions.discard(startingPosition)
+
+            endingPosition = self.random.choice(list(availableParkinLot))
+            availablePositions.discard(endingPosition)
+            availableParkinLot.discard(endingPosition)
+
+            self.grid.properties["parkingLayer"].set_cell(startingPosition, 2)
+
+            return startingPosition, endingPosition, True
+
+        availablePositions = set()
+        availableParkinLot = set()
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.grid.properties["buildingLayer"].data[x,y] == 0:
+                    availablePositions.add((x, y))
+                    if self.grid.properties["parkingLayer"].data[x,y] == 1:
+                        availableParkinLot.add((x, y))
+
+
+        carIsOnParking = False
+        for iDCar in range(self.n):
+            startingPosition = None
+            endingPosition = None
+            isParked = False
+            if not carIsOnParking:
+                startingPosition,endingPosition,isParked = createCarInParking(availableParkinLot, availablePositions)
+                carIsOnParking = True
+            else:
+                if self.random.randint(0,2) != 0:
+                    #Case Where they don't spawn in a parking lot
+                    startingPosition = self.random.choice(list(availablePositions))
+                    availableParkinLot.discard(startingPosition)
+                    availableParkinLot.discard(startingPosition)
+                    endingPosition = self.random.choice(list(availablePositions))
+                    availableParkinLot.discard(endingPosition)
+                    availablePositions.discard(endingPosition)
+                else:
+                    startingPosition, endingPosition, isParked = createCarInParking(availableParkinLot,
+                                                                                    availablePositions)
+
+            carAgent = agents.CarAgent(self, isParked, startingPosition, endingPosition)  # model, isParked, startingPosition, endingPosition
+            print(f"Starting Position: {startingPosition} and ending position {endingPosition}")
+            self.grid.place_agent(carAgent, (startingPosition[0],startingPosition[1]))
 
     def step(self):
-        self.agents_by_type[agents.TrafficLightAgent].shuffle_do("step")
+        for agent in self.agents_by_type[agents.TrafficLightAgent]:
+            agent.step()
+        self.agents_by_type[agents.CarAgent].shuffle_do("step")
