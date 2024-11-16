@@ -41,29 +41,31 @@ class CarAgent(mesa.Agent):
         print(neighbors)
         possibleMoves = []
         flag = False
+
         for neighbor in neighbors:
+
             xNeighbor,yNeighbor = neighbor
             if neighbor == self.endingPosition:
                 flag = True
                 possibleMoves = []
                 possibleMoves.append(neighbor)
-
+            #
             if not flag:
-                #Right Movment
+                #Down
                 if xNeighbor == x + 1:
-                    if self.model.grid.properties["RightLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-                #Left Movement
-                if xNeighbor == x - 1:
-                    if self.model.grid.properties["LeftLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-                #Up Movement
-                if yNeighbor == y + 1:
                     if self.model.grid.properties["DownLayer"].data[xNeighbor, yNeighbor] == 1:
                         possibleMoves.append(neighbor)
-                #Down Movemnt
-                if yNeighbor == y - 1:
+                #LUp
+                if xNeighbor == x - 1:
                     if self.model.grid.properties["UpLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+                #Right
+                if yNeighbor == y + 1:
+                    if self.model.grid.properties["RightLayer"].data[xNeighbor, yNeighbor] == 1:
+                        possibleMoves.append(neighbor)
+                #Left
+                if yNeighbor == y - 1:
+                    if self.model.grid.properties["LeftLayer"].data[xNeighbor, yNeighbor] == 1:
                         possibleMoves.append(neighbor)
 
         if flag:
