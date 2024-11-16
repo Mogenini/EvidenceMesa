@@ -63,55 +63,50 @@ ModelCity.step()
 
 from mesa.visualization import SolaraViz, make_plot_component, make_space_component
 
-from MoneyModel import MoneyModel
-
 def agent_portrayal(agent):
-    size = 10
-    color = "tab:red"
-    if agent.wealth > 0:
-        size = 50
-        color = "tab:blue"
-    return{"size":size, "color":color}
+    if isinstance(agent, CarAgent):
+        size = 10
+        color = "tab:blue" if agent.has_parked else "tab:gray"
+        return {"size": size, "color": color, "layer": 1, "shape": "circle"}
+    elif isinstance(agent, TrafficLightAgent):
+        color = "green" if agent.state else "red"
+        return {"size": 20, "color": color, "layer": 2, "shape": "rect"}
+    else:
+        return {"size": 5, "color": "black", "layer": 0}
+
+
 
 model_params = {
     "n": {
         "type": "SliderInt",
-        "value": 50,
+        "value": 1,
         "label": "Number of agents:",
-        "min": 10,
-        "max": 100,
+        "min": 1,
+        "max": 10,
         "step": 1,
     },
-    "width": {
-        "type": "SliderInt",
-        "value": 10,
-        "label": "Width:",
-        "min": 10,
-        "max": 50,
-        "step": 10,
-    },
-    "height":{
-        "type": "SliderInt",
-        "value": 10,
-        "label": "Height:",
-        "min": 10,
-        "max": 50,
-        "step": 10,
-    },
+    "width": 24,
+    "height": 24,
+    "dataStructure": data
 }
+'''
+Format:
+Semaphore: [ [ [(x,y),True],[] ] ]
+'''
 
-#Create model
-model1 = MoneyModel(50,10,10)
+#Create initial Model Instance
+model = CityModel(1,24,24,data)
 
-proplayer_portrayal = {"buildings": {"color": "black", "alpha": 0.25, "colorbar": False}}
+for _ in range(100):
+    model.step()
 
-SpaceGraph = make_space_component(agent_portrayal, propertylayer_portrayal=proplayer_portrayal)
-GiniPlot = make_plot_component("Gini")
 
+
+spaceGraph = make_space_component(agent_portrayal)
 page = SolaraViz(
-    model1,
-    components = [SpaceGraph, GiniPlot],
-    model_paras=model_params,
-    name="Wealth Model",
+    model,
+    components = [spaceGraph],
+    model_params = model_params,
+    name = "Car Agent and Traffic Light",
 )
 page
