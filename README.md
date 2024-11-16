@@ -23,7 +23,7 @@ The simulation initializes with a set of agents, each assigned a starting and en
 To run the program, please install all of the dependencies and to run the code use the following:
 
 solara run app.py
-## Credits Prebas Unity
+## Credits Prefabs Unity
 
 The following assets were used under their respective licenses:
 
