@@ -55,8 +55,22 @@ This project simulates a working city environment using a multi-agent model.
    - The simulation utilizes a grid-based system where agents interact with predefined properties such as parking areas, intersections, and traffic signals.  
 
 ---
+## Requirements
+To Run and Edit the Project
 
-## Credits
+Ensure Unity is installed on your system.
+
+Install ProBuilder:
+Open Unity.
+
+Go to Window > Package Manager.
+
+Search for ProBuilder in the Unity Registry.
+
+Click Install.
+---
+
+## Credits Prebas Unity
 
 The following assets were used under their respective licenses:
 
