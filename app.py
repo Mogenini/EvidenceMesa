@@ -1,14 +1,15 @@
 import mesa
+from mesa.examples.advanced.wolf_sheep.app import space_component, model
+from mesa.examples.basic.schelling.app import model_params
 from mesa.space import MultiGrid
 import numpy as np
 import seaborn as sns
+from mesa.visualization import Slider, SolaraViz, make_space_component
+import matplotlib.pyplot as plt
+from numpy.matrixlib.defmatrix import matrix
+from solara import component
 
-import model
-
-'''
-Format:
-Semaphore: [ [ [(x,y),True],[] ] ]
-'''
+from agents import CarAgent,TrafficLightAgent
 
 data = {
     "Buildings": [
@@ -49,19 +50,49 @@ data = {
                    [[(0, 8), False],[(1, 8), False]],
                    [[(5, 8), False],[(6, 8), False]],
                    [[(14, 17), False],[(15, 17), False]]
-
+    ],
+    "Left": [
+        ["Y", (0,1), (0,23)],
+        ["Y", (1,1), (1,23)],
+        ["X", (2,23), (23,23)],
+        ["Y", (2,23), (23,23)],
+        ["Y", (6,16), (6,22)],
+        ["Y", (7,16), (7,22)],
+        ["Y", (12,16), (12,22)],
+        ["Y", (13,16), (13,22)],
+        ["X", (2,1), (21,1)],
+        ["X", (2,15), (11,15)],
+        ["Y", (12,2), (12,15)],
+        ["Y", (13,2), (13,12)], #<------------------------------------------------- Mistake
+        ["X", (16,7), (17,7)],
+        ["Y", (18,2), (18,6)],
+        ["Y", (19,2), (19,6)],
+        ["X", (17,15), (21,15)],
+        ["X", (17,20), (21,20)],
+        ["X", (2,13), (11,13)],
+        ["X", (16,13), (21,13)],
+        ["X",(3,7),(11,7)]
+    ],
+    "Right": [["X",(2,0),(23,0)],["Y",(14,1),(14,12)],["Y",(15,1),(15,21)],
+              ["X",(16,6),(20,6)],["Y",(18,7),(18,11)],["Y",(19,7),(19,11)],
+              ["X",(3,6),(11,6)],["X",(2,12),(11,12)],["X",(2,14),(11,14)],
+              ["X",(16,12),(21,12)],["X",(16,14),(21,14)],["Y",(22,0),(22,23)],
+              ["Y",(23,0),(23,22)],["X",(2,22),(21,22)],["X",(17,18),(21,18)],
+              ["Y",(14,15),(14,21)]
+    ],
+    "Up": [["X",(2,6),(12,6)],["X",(2,7),(12,7)],["Y",(13,2),(13,11)],["Y",(15,2),(15,11)],
+           ["Y",(19,3),(19,5)],["Y",(19,8),(19,11)],["Y",(23,2),(23,23)],["X",(1,23),(23,23)],
+           ["X",(1,22),(22,22)],["Y",(1,2),(1,21)],["X",(2,15),(22,15)],["X",(16,14),(22,14)],
+           ["X",(2,14),(12,14)],["X",(16,18),(22,18)],["X",(16,19),(22,19)],["Y",(15,16),(15,21)],
+           ["Y",(7,16),(7,21)],["Y",(6,9),(6,12)]
+    ],
+    "Down": [["X",(0,0),(22,0)],["X",(0,1),(21,1)],["X",(15,6),(21,6)],["X",(15,7),(21,7)],
+             ["X",(1,12),(21,12)],["X",(1,13),(11,13)],["X",(15,13),(21,13)],["Y",(0,2),(0,21)],
+             ["Y",(22,2),(22,21)],["Y",(5,9),(5,11)],["Y",(6,17),(6,21)],["Y",(12,3),(12,10)],
+             ["Y",(12,17),(12,20)],["Y",(14,3),(14,10)],["Y",(14,17),(14,20)],["Y",(18,3),(18,5)],
+             ["Y",(18,9),(18,10)]
     ]
 }
-
-ModelCity = model.CityModel(1,24,24,data)
-
-ModelCity.step()
-
-
-
-
-
-from mesa.visualization import SolaraViz, make_plot_component, make_space_component
 
 def agent_portrayal(agent):
     if isinstance(agent, CarAgent):
@@ -73,8 +104,6 @@ def agent_portrayal(agent):
         return {"size": 20, "color": color, "layer": 2, "shape": "rect"}
     else:
         return {"size": 5, "color": "black", "layer": 0}
-
-
 
 model_params = {
     "n": {
@@ -89,10 +118,7 @@ model_params = {
     "height": 24,
     "dataStructure": data
 }
-'''
-Format:
-Semaphore: [ [ [(x,y),True],[] ] ]
-'''
+
 
 #Create initial Model Instance
 model = CityModel(1,24,24,data)
@@ -110,3 +136,4 @@ page = SolaraViz(
     name = "Car Agent and Traffic Light",
 )
 page
+
