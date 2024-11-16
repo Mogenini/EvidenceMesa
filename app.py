@@ -100,19 +100,38 @@ data = {
     ]
 }
 
-
-
-
 from model import CityModel
 from agents import TrafficLightAgent,CarAgent
 
-proplayer_portal = {""}
+proplayer_portal = {"buildingLayer":{"color": "blue","alpha":0.25,"colorbar":False},
+                    "trafficLightLayer":{"color": "orange","alpha":0.25,"colorbar":False},
+                    "parkingLayer":{"color": "yellow","alpha":0.25,"colorbar":False}
+}
 
-
+model_params = {
+    "n": {
+        "type": "SliderInt",
+        "value": 50,
+        "label": "Number of agents:",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+    },
+    "width": 24,
+    "height": 24,
+    "dataStructure":data
+}
 
 def agent_portrayal(agent):
-    pass
-
+    if isinstance(agent,TrafficLightAgent):
+        size = 50
+        color = "tab:green"
+        shape = "circle"
+    elif isinstance(agent,CarAgent):
+        size = 50
+        color = "tab:red"
+        shape = "circle"
+    return {"size":size,"color":color,"shape":shape}
 
 
 
@@ -120,12 +139,7 @@ def agent_portrayal(agent):
 #Create initial Model Instance
 model = CityModel(1,24,24,data)
 
-for _ in range(100):
-    model.step()
-
-
-'''
-spaceGraph = make_space_component(agent_portrayal)
+spaceGraph = make_space_component(agent_portrayal,propertylayer_portrayal=proplayer_portal)
 page = SolaraViz(
     model,
     components = [spaceGraph],
@@ -133,6 +147,6 @@ page = SolaraViz(
     name = "Car Agent and Traffic Light",
 )
 page
-'''
+
 
 

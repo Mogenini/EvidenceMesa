@@ -18,7 +18,7 @@ def set_layer(self, coordinate_dict, layer_name):
                 self.grid.properties[layer_name].set_cell((x, y), 1)
 
 class CityModel(mesa.Model):
-    def __init__(self, n, width, height, dataStructure, seed=None):
+    def __init__(self, n=1, width=24, height=24, dataStructure=None, seed=None):
         super().__init__(seed=seed)
         self.n = n
         self.width = width
