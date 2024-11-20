@@ -1,3 +1,5 @@
+from collections import deque
+
 import mesa
 from mesa.space import MultiGrid
 import numpy as np
@@ -17,6 +19,7 @@ class CarAgent(mesa.Agent):
         self.isParked = isParked
         self.startingPosition = startingPosition
         self.endingPosition = endingPosition
+        self.path = []
 
     def move(self):
         #Change the value of the grid if the car was parked
@@ -37,61 +40,86 @@ class CarAgent(mesa.Agent):
             print(f"Semaphore in red: {self.pos}")
             return
 
-        neighbors = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
-        print(neighbors)
-        possibleMoves = []
-        flag = False
-
-        for neighbor in neighbors:
-
-            xNeighbor,yNeighbor = neighbor
-            if neighbor == self.endingPosition:
-                flag = True
-                possibleMoves = []
-                possibleMoves.append(neighbor)
-            #
-            if not flag:
-                #Down
-                if xNeighbor == x + 1:
-                    if self.model.grid.properties["DownLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-                #LUp
-                if xNeighbor == x - 1:
-                    if self.model.grid.properties["UpLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-                #Right
-                if yNeighbor == y + 1:
-                    if self.model.grid.properties["RightLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-                #Left
-                if yNeighbor == y - 1:
-                    if self.model.grid.properties["LeftLayer"].data[xNeighbor, yNeighbor] == 1:
-                        possibleMoves.append(neighbor)
-
-        if flag:
-            self.isParked = True
-            xNewPos, yNewPos = possibleMoves[0]
-            self.model.grid.move_agent(self, (xNewPos, yNewPos))
-            print(f"Parking Lot Found: {xNewPos,yNewPos}")
-            return
-
-
-        if possibleMoves:
-            '''
-            Right Now we can do a distance method to obtain the quickest possible path, 
-            But in the final delivery we can do a BFS. 
-            '''
-            possibleMoves.sort(key=lambda move: calculate_distance(move, self.endingPosition))
-            xNewPos,yNewPos = possibleMoves[0]
-
-            if self.model.grid.is_cell_empty((xNewPos,yNewPos)):
-                print(f"New position: {xNewPos,yNewPos}")
+        if self.path: #We have [initial position saved, all other are the position we move]
+            xNewPos, yNewPos = self.path[0]
+            if self.model.grid.is_cell_empty((xNewPos, yNewPos)):
                 self.model.grid.move_agent(self, (xNewPos, yNewPos))
-            return
+                self.path.pop(0)
+        return
 
 
     def step(self):
+        if not self.path:
+            self.obtainRoute()
         self.move()
+
+    def obtainRoute(self):
+        route = self.bfs(self.startingPosition,self.endingPosition)
+        print(route)
+        if route:
+            route.pop(0)
+            self.path = route
+            print(f"The path he will take is: {self.path}")
+
+
+    def bfs(self,startingPosition, endingPosition):
+        print(f"Data on right layer  {self.model.grid.properties["RightLayer"].data} ")
+        queue = deque([startingPosition])
+        visitedPositions = set()
+        visitedPositions.add(startingPosition)
+        path = {startingPosition: None}
+        while queue:
+            currentPosition = queue.popleft()
+            print(f"current Position: {currentPosition}")
+            if currentPosition == endingPosition:
+                print(path)
+                route = []
+                while currentPosition:
+                    route.append(currentPosition)
+                    currentPosition = path[currentPosition]
+                route.reverse()
+                return route
+
+            neighbors = self.model.grid.get_neighborhood(currentPosition, moore=False, include_center=False)
+            for neighbor in neighbors:
+                if neighbor not in visitedPositions:
+                    if self.checkMovementBFS(currentPosition, neighbor):
+                        visitedPositions.add(neighbor)
+                        path[neighbor] = currentPosition
+                        queue.append(neighbor)
+        return False
+
+    def checkMovementBFS(self,currentPosition, positionToMove):
+        x, y = currentPosition
+        xNeighbor, yNeighbor = positionToMove
+        #Down
+        if xNeighbor == x + 1:
+            print(f"Down Movement: {currentPosition}")
+            if self.model.grid.properties["DownLayer"].data[x, y] == 1:
+                print("Entered Down")
+                return True
+
+        # LUp
+        if xNeighbor == x - 1:
+            print(f"Up Movement: {currentPosition}")
+            if self.model.grid.properties["UpLayer"].data[x, y] == 1:
+                print("Entered Up")
+                return True
+
+        # Right
+        if yNeighbor == y + 1:
+
+            if self.model.grid.properties["RightLayer"].data[x, y] == 1:
+                print("Entered Right")
+                return True
+
+        # Left
+        if yNeighbor == y - 1:
+            print(f"Left Movement: {currentPosition}")
+            if self.model.grid.properties["LeftLayer"].data[x, y] == 1:
+                print("Entered Left")
+                return True
+        return False
 
 
 class TrafficLightAgent(mesa.Agent):
