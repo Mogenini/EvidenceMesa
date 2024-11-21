@@ -6,6 +6,7 @@ from mesa.visualization import Slider, SolaraViz, make_space_component
 import matplotlib.pyplot as plt
 from numpy.matrixlib.defmatrix import matrix
 from solara import component
+import agents
 
 from agents import CarAgent,TrafficLightAgent
 
@@ -161,6 +162,7 @@ page
 
 from flask import Flask, jsonify
 from model import CityModel
+import model 
 
 model = CityModel(
     1, #agents
@@ -175,17 +177,18 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return jsonify({"Message": "Hello World"})
-'''
+
 @app.route("/positions")
 def positions():
-    #return boids.getPositions()
-    boids.step()
-    pos = boids.getPositions()
-    p = []
-    for po in pos:
-        p.append({"x": po[0], "y": po[1]})
-    print(pos)
-    return jsonify(p)
-'''
+    model.step()
+    positions = []
+
+    for agent in model.schedule.agents:
+        if hasattr(agent, 'pos'):  # Se haría con la variable pos de los agentes?
+            positions.append({"x": agent.pos[0], "y": agent.pos[1]})
+    
+    print(positions)
+    return jsonify(positions)
+
 if __name__ == "__main__":
-    app.run(host ='0.0.0.0', port = 8000, debug=True) ##la neta, ese host y ese port se cambian eh
+    app.run(host ='0.0.0.0', port = 8000, debug=True)
