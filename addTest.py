@@ -30,8 +30,7 @@ def positions():
     print(pos)
     return jsonify(p)
 
-if __name__ == "_main_":
-    app.run(host ='0.0.0.0', port = 8000, debug=True) ##la neta, ese host y ese port se cambian eh
+if __name__ == "__main__":
+    app.run(host ='0.0.0.0', port = 8000, debug=True) #meaning 127.0.0.1:8000
 
 
-#TODO this is only the code, is missing the model from the original mesa folder
