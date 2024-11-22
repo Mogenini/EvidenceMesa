@@ -1,68 +1,13 @@
-from model import CityModel
-from agents import TrafficLightAgent,CarAgent
-
-proplayer_portal = {"buildingLayer":{"color": "blue","alpha":0.25,"colorbar":False},
-                    "trafficLightLayer":{"color": "orange","alpha":0.25,"colorbar":False},
-                    "parkingLayer":{"color": "yellow","alpha":0.25,"colorbar":False}
-}
-
-model_params = {
-    "n": {
-        "type": "SliderInt",
-        "value": 50,
-        "label": "Number of agents:",
-        "min": 1,
-        "max": 3,
-        "step": 1,
-    },
-    "width": 24,
-    "height": 24,
-    "dataStructure":data
-}
-
-def agent_portrayal(agent):
-    if isinstance(agent,TrafficLightAgent):
-        size = 50
-        color = "tab:green"
-        shape = "circle"
-    elif isinstance(agent,CarAgent):
-        size = 50
-        color = "tab:red"
-        shape = "circle"
-    return {"size":size,"color":color,"shape":shape}
-
-
-
-
-#Create initial Model Instance
-model = CityModel(1,24,24,data)
-model.step()
-
-
-
-
-
-spaceGraph = make_space_component(agent_portrayal,propertylayer_portrayal=proplayer_portal)
-page = SolaraViz(
-    model,
-    components = [spaceGraph],
-    model_params = model_params,
-    name = "Car Agent and Traffic Light",
-)
-page
-
-
 from flask import Flask, jsonify
 from model import CityModel
-import model 
+import dataCity
 
-model = CityModel(
-    1, #agents
-    24, #width
-    24, #height
-    data, #data
+City = CityModel(
+    1, #Number of agents
+    24, #Width
+    24, #Height
+    dataCity.data, #Information of our City
 )
-
 app = Flask(__name__)
 
 #configure parameters in the model.py
@@ -70,20 +15,31 @@ app = Flask(__name__)
 def index():
     return jsonify({"Message": "Hello World"})
 
-@app.route("/positions")
-def positions():
-    model.step()
-    positions = []
+@app.route("/positionsCar")
+def dataPositionsCar():
+    City.step()
+    pos = City.getPositionCar()
+    print(f"The data that we are recieving is: {pos}")
+    p = []
+    for po in pos:
+        p.append({"x": po[0], "y": po[1]})
+    return  jsonify(p)
 
-    for agent in model.schedule.agents:
-        if hasattr(agent, 'pos'):  # Variables pos de model.py
-            positions.append({"x": agent.pos[0], "y": agent.pos[1]})
-    
-    print(positions)
-    return jsonify(positions)
-  
-@app.route("/trafficlights")
-def index():
+@app.route("/dataTrafficLight")
+def dataTrafficLightInfo():
+    dataTraffic = City.getDataTrafficSigns()
+    data = []
+    for trafficIdx in dataTraffic:
+        data.append({"trafficLight1Pos": trafficIdx[0][0],
+                     "trafficLight2Pos": trafficIdx[0][1],
+                     "state": trafficIdx[1]})
+    return  jsonify(data)
+
+if __name__ == "_main_":
+    app.run(host ='0.0.0.0', port = 8000, debug=True)
+
+
+
   return jsonify({"Message": "Hello again"})
 
 if __name__ == "__main__":
