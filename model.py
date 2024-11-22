@@ -165,3 +165,10 @@ class CityModel(mesa.Model):
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
             agent.step()
         self.agents_by_type[agents.CarAgent].shuffle_do("step")
+
+    def getPositionCar(self):
+        print(len(self.agents_by_type[agents.CarAgent]))
+        pos = []
+        for agent in self.agents_by_type[agents.CarAgent]:
+            pos.append(agent.pos)
+        return pos
