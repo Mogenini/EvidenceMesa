@@ -81,6 +81,10 @@ def positions():
     
     print(positions)
     return jsonify(positions)
+  
+@app.route("/trafficlights")
+def index():
+  return jsonify({"Message": "Hello again"})
 
 if __name__ == "__main__":
     app.run(host ='0.0.0.0', port = 8000, debug=True)
