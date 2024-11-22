@@ -184,7 +184,7 @@ def positions():
     positions = []
 
     for agent in model.schedule.agents:
-        if hasattr(agent, 'pos'):  # Se haría con la variable pos de los agentes?
+        if hasattr(agent, 'pos'):  # Variables pos de model.py
             positions.append({"x": agent.pos[0], "y": agent.pos[1]})
     
     print(positions)
