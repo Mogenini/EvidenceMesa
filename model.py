@@ -172,3 +172,12 @@ class CityModel(mesa.Model):
         for agent in self.agents_by_type[agents.CarAgent]:
             pos.append(agent.pos)
         return pos
+
+    def getDataTrafficSigns(self):
+        print(f"The amount of traffic lights is: {len(self.agents_by_type[agents.TrafficLightAgent])}")
+        dataTrafficSigns = []
+        for agent in self.agents_by_type[agents.TrafficLightAgent]:
+            positions = agent.getPositions()
+            state = agent.getState()
+            dataTrafficSigns.append([positions, state])
+        return dataTrafficSigns
