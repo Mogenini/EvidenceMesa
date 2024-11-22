@@ -1,15 +1,3 @@
-import mesa
-from mesa.space import MultiGrid
-import numpy as np
-import seaborn as sns
-from mesa.visualization import Slider, SolaraViz, make_space_component
-import matplotlib.pyplot as plt
-from numpy.matrixlib.defmatrix import matrix
-from solara import component
-import agents
-
-from agents import CarAgent,TrafficLightAgent
-
 data = {
     "Buildings": [
         (2, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (10, 2), (11, 2), (3, 2),
@@ -105,56 +93,3 @@ data = {
              ["X",(14,10),(15,10)],["X",(0,17),(1,17)],["X",(6,20),(7,20)]
     ]
 }
-
-from model import CityModel
-from agents import TrafficLightAgent,CarAgent
-
-proplayer_portal = {"buildingLayer":{"color": "blue","alpha":0.25,"colorbar":False},
-                    "trafficLightLayer":{"color": "orange","alpha":0.25,"colorbar":False},
-                    "parkingLayer":{"color": "yellow","alpha":0.25,"colorbar":False}
-}
-
-model_params = {
-    "n": {
-        "type": "SliderInt",
-        "value": 50,
-        "label": "Number of agents:",
-        "min": 1,
-        "max": 3,
-        "step": 1,
-    },
-    "width": 24,
-    "height": 24,
-    "dataStructure":data
-}
-
-def agent_portrayal(agent):
-    if isinstance(agent,TrafficLightAgent):
-        size = 50
-        color = "tab:green"
-        shape = "circle"
-    elif isinstance(agent,CarAgent):
-        size = 50
-        color = "tab:red"
-        shape = "circle"
-    return {"size":size,"color":color,"shape":shape}
-
-
-
-
-#Create initial Model Instance
-model = CityModel(1,24,24,data)
-model.step()
-
-
-
-
-
-spaceGraph = make_space_component(agent_portrayal,propertylayer_portrayal=proplayer_portal)
-page = SolaraViz(
-    model,
-    components = [spaceGraph],
-    model_params = model_params,
-    name = "Car Agent and Traffic Light",
-)
-page
