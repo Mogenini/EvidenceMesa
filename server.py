@@ -15,9 +15,14 @@ app = Flask(__name__)
 def index():
     return jsonify({"Message": "Hello World"})
 
+@app.route("/stepCall")
+def stepCall():
+    if City.step():
+        return jsonify({"Action": "Step completed"})
+    return jsonify({"Action": "Step not completed"})
+
 @app.route("/positionsCar")
 def dataPositionsCar():
-    City.step()
     pos = City.getPositionCar()
     print(f"The data that we are recieving is: {pos}")
     p = []
