@@ -1,14 +1,17 @@
 from flask import Flask, jsonify
 from model import CityModel
+from flask_cors import CORS
 import dataCity
+import agents
 
 City = CityModel(
-    1, #Number of agents
+    3, #Number of agents
     24, #Width
     24, #Height
     dataCity.data, #Information of our City
 )
 app = Flask(__name__)
+CORS(app)
 
 #configure parameters in the model.py
 @app.route("/")
@@ -22,12 +25,10 @@ def stepCall():
 
 @app.route("/positionsCar")
 def dataPositionsCar():
-    pos = City.getPositionCar()
-    print(f"The data that we are recieving is: {pos}")
-    p = []
-    for po in pos:
-        p.append({"x": po[0], "y": po[1]})
-    return  jsonify(p)
+    car_positions = City.getPositionCar()
+    print(f"Datos enviados a Unity: {car_positions}")
+    return jsonify(car_positions)
+
 
 @app.route("/dataTrafficLight")
 def dataTrafficLightInfo():
@@ -38,6 +39,24 @@ def dataTrafficLightInfo():
                      "trafficLight2Pos": trafficIdx[0][1],
                      "state": trafficIdx[1]})
     return  jsonify(data)
+
+@app.route("/carPath", methods=["GET"])
+def car_path():
+    cars_data = []
+    for car in City.agents_by_type[agents.CarAgent]:
+        car.step()  
+        car_info = {
+            "isParked": car.isParked,
+            "position": list(car.pos),
+            "startingPosition": list(car.startingPosition),
+            "endingPosition": list(car.endingPosition),
+            "path": [list(step) for step in car.path]  
+        }
+        cars_data.append(car_info)
+    
+    print(f"Datos de los carros enviados: {cars_data}")
+    return jsonify(cars_data)
+
 
 if __name__ == "__main__":
     app.run(host ='0.0.0.0', port = 8000, debug=True)
