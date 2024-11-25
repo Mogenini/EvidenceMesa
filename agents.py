@@ -148,3 +148,8 @@ class TrafficLightAgent(mesa.Agent):
     def step(self):
         self.change_light()
 
+    def getPositions(self):
+        return self.semaphorePosition
+
+    def getState(self):
+        return self.state
