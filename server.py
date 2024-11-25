@@ -17,9 +17,8 @@ def index():
 
 @app.route("/stepCall")
 def stepCall():
-    if City.step():
-        return jsonify({"Action": "Step completed"})
-    return jsonify({"Action": "Step not completed"})
+    City.step()
+    return jsonify({"Action": "Step completed"})
 
 @app.route("/positionsCar")
 def dataPositionsCar():

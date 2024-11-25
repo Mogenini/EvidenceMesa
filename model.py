@@ -162,9 +162,11 @@ class CityModel(mesa.Model):
 
 
     def step(self):
+        print("Self is being called")
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
             agent.step()
         self.agents_by_type[agents.CarAgent].shuffle_do("step")
+        return 1
 
     def getPositionCar(self):
         print(len(self.agents_by_type[agents.CarAgent]))
