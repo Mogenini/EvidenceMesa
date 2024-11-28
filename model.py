@@ -4,6 +4,9 @@ import numpy as np
 import seaborn as sns
 import agents
 
+'''
+Model: City
+'''
 # Function to set cells in a specified layer
 def set_layer(self, coordinate_dict, layer_name):
     for item in coordinate_dict:
@@ -57,13 +60,17 @@ class CityModel(mesa.Model):
             for x, y in buildingsArray:
                 self.grid.properties["buildingLayer"].set_cell((x, y), 1)
 
-        def set_traffic_lightsLayer(coordinateStructurePositions):
-            for coordinate_pair in coordinateStructurePositions:
-                for (x, y), isOn in coordinate_pair:
-                    if isOn:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 1)
-                    else:
-                        self.grid.properties["trafficLightLayer"].set_cell((x, y), 2)
+        def set_traffic_lightsLayer(semaphoresArray):
+            for semaphore_group in semaphoresArray:
+                for coordinate_pair in semaphore_group:
+                    for coordinate in coordinate_pair:
+                        if "SensorDist" not in coordinate:
+                            pos = coordinate["Position"]
+                            isOn = coordinate["State"]
+                            if isOn:
+                                self.grid.properties["trafficLightLayer"].set_cell(pos, 1)
+                            else:
+                                self.grid.properties["trafficLightLayer"].set_cell(pos, 2)
 
         def set_parking_lotsLayer(coordinateStructurePositions):
             for (x, y), isOccupied in coordinateStructurePositions:
@@ -90,11 +97,20 @@ class CityModel(mesa.Model):
         # Create Traffic Light Agents
         for idSemaphore in dataStructure["Semaphores"]:
             coords = []
-            status = False
-            for (x, y), value in idSemaphore:
-                coords.append((x, y))
-                status = value
-            agents.TrafficLightAgent(self, idSemaphore, coords, status)
+            status = []
+            sensors = []
+            for arrayGroupSemaphore in idSemaphore:
+                coordPair = []
+                statusPair = []
+                for coordinate in arrayGroupSemaphore:
+                    if "SensorDist" not in coordinate:
+                        coordPair.append(coordinate["Position"])
+                        statusPair.append(coordinate["State"])
+                    else:
+                        sensors.append(coordinate["SensorDist"])
+                coords.append(coordPair)
+                status.append(statusPair[0])
+            agents.TrafficLightAgent(self, idSemaphore, coords, status,sensors)
 
         '''
         Create car Agent:
@@ -154,7 +170,6 @@ class CityModel(mesa.Model):
 
 
     def step(self):
-        print("Self is being called")
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
             agent.step()
         self.agents_by_type[agents.CarAgent].shuffle_do("step")
@@ -171,7 +186,14 @@ class CityModel(mesa.Model):
         print(f"The amount of traffic lights is: {len(self.agents_by_type[agents.TrafficLightAgent])}")
         dataTrafficSigns = []
         for agent in self.agents_by_type[agents.TrafficLightAgent]:
-            positions = agent.getPositions()
-            state = agent.getState()
-            dataTrafficSigns.append([positions, state])
+            positions = agent.getPositions() #[[(pos),(pos)],[(pos),(pos)]]
+            state = agent.getState() # [State,State]
+            paired_data = []
+
+            # Pair each position with the corresponding state
+            for pos, state in zip(positions, state):
+                paired_data.append([pos, state])
+
+            dataTrafficSigns.append(paired_data)
+            #dataTrafficSigns.append([positions, state])
         return dataTrafficSigns
