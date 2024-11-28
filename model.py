@@ -192,8 +192,7 @@ class CityModel(mesa.Model):
 
             # Pair each position with the corresponding state
             for pos, state in zip(positions, state):
-                paired_data.append([pos, state])
-
-            dataTrafficSigns.append(paired_data)
+                #paired_data.append([pos, state])
+                dataTrafficSigns.append([pos, state])
             #dataTrafficSigns.append([positions, state])
         return dataTrafficSigns
