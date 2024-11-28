@@ -63,7 +63,7 @@ class CarAgent(mesa.Agent):
 
 
     def bfs(self,startingPosition, endingPosition):
-        print(f"Data on right layer  {self.model.grid.properties["RightLayer"].data} ")
+        print(f"Data on right layer  {self.model.grid.properties['RightLayer'].data} ")
         queue = deque([startingPosition])
         visitedPositions = set()
         visitedPositions.add(startingPosition)
