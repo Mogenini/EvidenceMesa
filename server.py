@@ -3,7 +3,7 @@ from model import CityModel
 import dataCity
 
 City = CityModel(
-    2, #Number of agents
+    4, #Number of agents
     24, #Width
     24, #Height
     dataCity.data, #Information of our City

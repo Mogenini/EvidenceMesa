@@ -4,10 +4,15 @@ from mesa.visualization import Slider, SolaraViz, make_space_component
 from model import CityModel
 from agents import TrafficLightAgent,CarAgent
 import dataCity
+import matplotlib
+
+CustomCmap = matplotlib.colors.ListedColormap(('white', 'green', 'red','yellow'))
 
 proplayer_portal = {"buildingLayer":{"color": "blue","alpha":0.25,"colorbar":False},
-                    "trafficLightLayer":{"color": "orange","alpha":0.25,"colorbar":False},
-                    "parkingLayer":{"color": "yellow","alpha":0.25,"colorbar":False}
+                    "trafficLightLayer":{"colormap": CustomCmap ,
+                                         "alpha":0.25,
+                                         "colorbar":False},
+                    "parkingLayer":{"color": "black","alpha":0.25,"colorbar":False}
 }
 
 model_params = {
