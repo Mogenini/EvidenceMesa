@@ -86,14 +86,6 @@ class CityModel(mesa.Model):
             set_layer(self, coordinateStructurePositions, "DownLayer")
 
         set_Data_Structures(dataStructure)
-        print("Right Position: ")
-        print(self.grid.properties["RightLayer"].data)
-        print("Left Position: ")
-        print(self.grid.properties["LeftLayer"].data)
-        print("Down Position: ")
-        print(self.grid.properties["DownLayer"].data)
-        print("Up Position: ")
-        print(self.grid.properties["UpLayer"].data)
 
         # Create Traffic Light Agents
         for idSemaphore in dataStructure["Semaphores"]:

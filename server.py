@@ -3,7 +3,7 @@ from model import CityModel
 import dataCity
 
 City = CityModel(
-    1, #Number of agents
+    2, #Number of agents
     24, #Width
     24, #Height
     dataCity.data, #Information of our City
@@ -27,17 +27,14 @@ def dataPositionsCar():
     p = []
     for po in pos:
         p.append({"x": po[0], "y": po[1]})
+    p = {"points": p}
     return  jsonify(p)
 
 @app.route("/dataTrafficLight")
 def dataTrafficLightInfo():
     dataTraffic = City.getDataTrafficSigns()
-    data = []
-    for trafficIdx in dataTraffic:
-        data.append({"trafficLight1Pos": trafficIdx[0][0],
-                     "trafficLight2Pos": trafficIdx[0][1],
-                     "state": trafficIdx[1]})
-    return  jsonify(data)
+    states = {f"state{index}": trafficIdx[1] for index, trafficIdx in enumerate(dataTraffic)}
+    return jsonify({"states": states})
 
 if __name__ == "_main_":
     app.run(host ='0.0.0.0', port = 8000, debug=True)
