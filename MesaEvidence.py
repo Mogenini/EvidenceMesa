@@ -86,11 +86,17 @@ class CarAgent(mesa.Agent):
         self.destination = destinationPosition
 
     def move(self):
+      #Part numer one to see if the car is parked
+      if self.isParked:
+         return  
       '''
       Possible PSEUDOCODE:
 
       1. Check if car is parked:
         If the car is parked and doesn't need to move we don't advance the movement.
+      
+
+
 
       2. Check for Semaphore near you.
         IF there is and it's green we can continue.
@@ -101,8 +107,31 @@ class CarAgent(mesa.Agent):
       '''
 
     def park(self):
+      #Park implementar 
+      #moore property
+      neighbors = self.model.grid.get_neighbors(self.pos, moore = True, include_center=False, radius = 1)
+      found_parking_spot = False
+
+      for neighbor_pos in neighbors:
+        if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+           self.model.grid.move_agent(self, neighbor_pos)
+           self.isParked = True
+           found_parking_spot = True
+           break
+        
+      if not found_parking_spot:
+         radius = 2
+         while not found_parking_spot and radius <= 3:
+            extended_neighbors = self.model.grid.get_neighbors(self.pos, moore=True, include_center=False, radius=radius)
+            for neighbor_pos in extended_neighbors:
+                if not any(isinstance(agent, CarAgent) for agent in self.model.grid.get_cell_list_contents(neighbor_pos)):
+                    self.model.grid.move_agent(self, neighbor_pos)
+                    self.isParked = True
+                    found_parking_spot = True
+                    break
+            radius += 1
       '''
-      Would only change the variables property.
+      Would only change the variables property. Implemented the logic behind the neighbors
       '''
 
     def step(self):
@@ -126,8 +155,10 @@ class TrafficLightAgent(mesa.Agent):
 
     def change_light(self):
       if self.state:
-        self.state = False
+        self.state = False 
         #Modify the property grid
+
+        self.model.grid.place_agent(self, self.position)
       else:
         self.state = True
 
